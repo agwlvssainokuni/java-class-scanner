@@ -21,7 +21,9 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.FieldInfo;
 import io.github.classgraph.MethodInfo;
+import io.github.classgraph.MethodParameterInfo;
 import io.github.classgraph.ScanResult;
+import io.github.classgraph.TypeSignature;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.apache.commons.csv.CSVFormat;
@@ -232,7 +234,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
                         var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
                         var parameters = Stream.of(methodInfo.getParameterInfo())
-                                .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
+                                .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
+                                .map(TypeSignature::toString)
                                 .collect(Collectors.joining(", "));
 
                         // Get method annotations
@@ -348,7 +351,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 var constructors = classInfo.getConstructorInfo();
                 for (var constructorInfo : constructors) {
                     var parameters = Stream.of(constructorInfo.getParameterInfo())
-                            .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
+                            .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
+                            .map(TypeSignature::toString)
                             .collect(Collectors.joining(", "));
 
                     // Get constructor annotations
@@ -488,7 +492,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
                         var name = methodInfo.getName();
                         var params = Stream.of(methodInfo.getParameterInfo())
-                                .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
+                                .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
+                                .map(TypeSignature::toString)
                                 .collect(Collectors.joining(", "));
                         
                         // Get method annotations
@@ -510,7 +515,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                     .forEach(constructorInfo -> {
                         var modifiers = constructorInfo.getModifiersStr();
                         var params = Stream.of(constructorInfo.getParameterInfo())
-                                .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
+                                .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
+                                .map(TypeSignature::toString)
                                 .collect(Collectors.joining(", "));
                         
                         // Get constructor annotations
