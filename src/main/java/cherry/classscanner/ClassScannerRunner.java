@@ -16,14 +16,7 @@
 
 package cherry.classscanner;
 
-import io.github.classgraph.AnnotationInfo;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.FieldInfo;
-import io.github.classgraph.MethodInfo;
-import io.github.classgraph.MethodParameterInfo;
-import io.github.classgraph.ScanResult;
-import io.github.classgraph.TypeSignature;
+import io.github.classgraph.*;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.apache.commons.csv.CSVFormat;
@@ -57,7 +50,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private int exitCode = 0;
-    
+
     // Track CSV files to determine if headers need to be written
     private final Set<String> csvFilesCreated = new HashSet<>();
 
@@ -212,7 +205,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     ) throws IOException {
         String fileKey = "methods:" + fileName;
         boolean isFirstWrite = !csvFilesCreated.contains(fileKey);
-        var format = isFirstWrite ? 
+        var format = isFirstWrite ?
                 csvFormat.builder()
                         .setHeader("ソースパス", "クラス名", "メソッド名", "返却値", "引数", "修飾子", "IsStatic", "メソッドアノテーション", "引数アノテーション")
                         .build() :
@@ -220,7 +213,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
-            
+
             if (isFirstWrite) {
                 csvFilesCreated.add(fileKey);
             }
@@ -267,7 +260,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     ) throws IOException {
         String fileKey = "fields:" + fileName;
         boolean isFirstWrite = !csvFilesCreated.contains(fileKey);
-        var format = isFirstWrite ? 
+        var format = isFirstWrite ?
                 csvFormat.builder()
                         .setHeader("ソースパス", "クラス名", "フィールド名", "フィールド型", "修飾子", "IsStatic", "フィールドアノテーション")
                         .build() :
@@ -275,7 +268,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
-            
+
             if (isFirstWrite) {
                 csvFilesCreated.add(fileKey);
             }
@@ -317,7 +310,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     ) throws IOException {
         String fileKey = "constructors:" + fileName;
         boolean isFirstWrite = !csvFilesCreated.contains(fileKey);
-        var format = isFirstWrite ? 
+        var format = isFirstWrite ?
                 csvFormat.builder()
                         .setHeader("ソースパス", "クラス名", "引数", "修飾子", "コンストラクタアノテーション", "引数アノテーション")
                         .build() :
@@ -325,7 +318,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
-            
+
             if (isFirstWrite) {
                 csvFilesCreated.add(fileKey);
             }
@@ -484,8 +477,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     // Helper methods for method filtering and string conversion
     private boolean isRegularMethod(@Nonnull MethodInfo methodInfo) {
         return !methodInfo.getName().equals("<init>") &&
-               !methodInfo.getName().equals("<clinit>") &&
-               !methodInfo.getName().contains("lambda$");
+                !methodInfo.getName().equals("<clinit>") &&
+                !methodInfo.getName().contains("lambda$");
     }
 
     @Nonnull
