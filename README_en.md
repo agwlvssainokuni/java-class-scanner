@@ -6,8 +6,9 @@ Java Class Scanner is a command-line tool that analyzes Java class files in JAR 
 
 - Extract detailed information from Java classes in JAR files and directories
 - CSV/TSV output for methods, fields, and constructors information
-- Annotation information extraction and output support
+- Annotation information extraction and output support (methods, fields, constructors, parameter annotations)
 - Result aggregation for multiple file scanning (with source path tracking)
+- Sorted output in alphabetical order and parameter count order
 - Package name filtering functionality
 - Multiple character encoding support
 - Detailed display mode
@@ -132,6 +133,8 @@ java -jar java-class-scanner.jar --methods-csv=all-methods.csv app1.jar app2.jar
 - When multiple files/directories are specified, all results are aggregated into a single CSV file
 - The source path column allows tracking which file/directory each class was extracted from
 - Annotation information includes fully qualified class names
+- Output is automatically sorted (class names, method names, field names: alphabetical order, constructors: parameter count order)
+- Internal methods (`<init>`, `<clinit>`, lambda methods) are excluded from output
 
 ## Development
 
@@ -153,6 +156,12 @@ java -jar java-class-scanner.jar --methods-csv=all-methods.csv app1.jar app2.jar
   - ClassGraph 4.8.165 (class analysis)
   - Apache Commons CSV 1.10.0 (CSV output)
   - Apache Commons Lang3 (utilities)
+
+### Architecture Features
+- **Modern Java Features**: Utilizes Java 21's `toList()`, method references, and switch expressions
+- **Code Quality**: Helper method extraction based on DRY principles
+- **CSV Output Optimization**: Efficient file processing with header management and append mode
+- **Comprehensive Sorting**: Consistent sorting across all outputs
 
 ## License
 

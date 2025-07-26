@@ -100,8 +100,18 @@ All CSV outputs include a source path column as the first column:
 - Uses SLF4J with logger instance obtained via `getClass()`
 
 ### Key Implementation Patterns
-- **Method references**: Uses `Comparator.comparing()` and `AnnotationInfo::getName` for clean code
-- **Stream processing**: Leverages `Stream.of()` consistently instead of `Arrays.stream()`
-- **Annotation handling**: Extracts both element-level and parameter-level annotations
+- **Method references**: Uses `Comparator.comparing()`, `MethodParameterInfo::getTypeSignatureOrTypeDescriptor`, and `AnnotationInfo::getName` for clean code
+- **Stream processing**: Leverages `Stream.of()` consistently instead of `Arrays.stream()` with `toList()` instead of `Collectors.toList()`
+- **Annotation handling**: Extracts both element-level and parameter-level annotations with formatted output (pipe separators for parameters)
 - **Resource management**: Proper try-with-resources for file operations
-- **Java 21 features**: Uses `getFirst()` method for list access
+- **Java 21 features**: Uses `getFirst()` method for list access and modern switch expressions
+- **Method extraction**: Common string conversion logic extracted into reusable helper methods (`parametersToString()`, `annotationsToString()`, `parameterAnnotationsToString()`)
+- **Method filtering**: `isRegularMethod()` helper filters out constructors, static initializers, and lambda methods
+- **Comprehensive sorting**: All CSV outputs are sorted (classes by name, methods by name, fields by name, constructors by parameter count)
+
+### Code Quality Patterns
+- **DRY principle**: Eliminated duplicate Stream processing through method extraction
+- **Single responsibility**: Each helper method has focused, testable functionality  
+- **Null safety**: Consistent use of `@Nonnull` and `@Nullable` annotations
+- **Error handling**: Graceful fallbacks with user warnings for invalid inputs (charset, format)
+- **Immutable collections**: Uses `toList()` for immutable result collections
