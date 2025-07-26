@@ -44,7 +44,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,6 +55,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private int exitCode = 0;
+    
+    // Track CSV files to determine if headers need to be written
+    private final Set<String> csvFilesCreated = new HashSet<>();
 
     @Override
     public void run(@Nonnull ApplicationArguments args) {
@@ -169,17 +174,17 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
             if (args.containsOption("methods-csv")) {
                 var methodsFile = args.getOptionValues("methods-csv").getFirst();
-                outputMethodsToCsv(filteredClasses, methodsFile, charset, csvFormat, quiet);
+                outputMethodsToCsv(filteredClasses, methodsFile, filePath, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("fields-csv")) {
                 var fieldsFile = args.getOptionValues("fields-csv").getFirst();
-                outputFieldsToCsv(filteredClasses, fieldsFile, charset, csvFormat, quiet);
+                outputFieldsToCsv(filteredClasses, fieldsFile, filePath, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("constructors-csv")) {
                 var constructorsFile = args.getOptionValues("constructors-csv").getFirst();
-                outputConstructorsToCsv(filteredClasses, constructorsFile, charset, csvFormat, quiet);
+                outputConstructorsToCsv(filteredClasses, constructorsFile, filePath, charset, csvFormat, quiet);
             }
 
             // Standard output
@@ -199,16 +204,25 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private void outputMethodsToCsv(
             @Nonnull List<ClassInfo> classes,
             @Nonnull String fileName,
+            @Nonnull String sourcePath,
             @Nonnull Charset charset,
             @Nonnull CSVFormat csvFormat,
             boolean quiet
     ) throws IOException {
-        var format = csvFormat.builder()
-                .setHeader("クラス名", "メソッド名", "返却値", "引数", "修飾子", "IsStatic", "メソッドアノテーション", "引数アノテーション")
-                .build();
+        String fileKey = "methods:" + fileName;
+        boolean isFirstWrite = !csvFilesCreated.contains(fileKey);
+        var format = isFirstWrite ? 
+                csvFormat.builder()
+                        .setHeader("ソースパス", "クラス名", "メソッド名", "返却値", "引数", "修飾子", "IsStatic", "メソッドアノテーション", "引数アノテーション")
+                        .build() :
+                csvFormat;
 
-        try (FileWriter writer = new FileWriter(fileName, charset);
+        try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
+            
+            if (isFirstWrite) {
+                csvFilesCreated.add(fileKey);
+            }
 
             for (ClassInfo classInfo : classes) {
                 var methods = classInfo.getMethodInfo();
@@ -235,6 +249,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                                 .collect(Collectors.joining(" | "));
 
                         printer.printRecord(
+                                sourcePath,
                                 classInfo.getName(),
                                 methodInfo.getName(),
                                 returnType,
@@ -258,16 +273,25 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private void outputFieldsToCsv(
             @Nonnull List<ClassInfo> classes,
             @Nonnull String fileName,
+            @Nonnull String sourcePath,
             @Nonnull Charset charset,
             @Nonnull CSVFormat csvFormat,
             boolean quiet
     ) throws IOException {
-        var format = csvFormat.builder()
-                .setHeader("クラス名", "フィールド名", "フィールド型", "修飾子", "IsStatic", "フィールドアノテーション")
-                .build();
+        String fileKey = "fields:" + fileName;
+        boolean isFirstWrite = !csvFilesCreated.contains(fileKey);
+        var format = isFirstWrite ? 
+                csvFormat.builder()
+                        .setHeader("ソースパス", "クラス名", "フィールド名", "フィールド型", "修飾子", "IsStatic", "フィールドアノテーション")
+                        .build() :
+                csvFormat;
 
-        try (FileWriter writer = new FileWriter(fileName, charset);
+        try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
+            
+            if (isFirstWrite) {
+                csvFilesCreated.add(fileKey);
+            }
 
             for (ClassInfo classInfo : classes) {
                 var fields = classInfo.getFieldInfo();
@@ -280,6 +304,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                             .collect(Collectors.joining(", "));
 
                     printer.printRecord(
+                            sourcePath,
                             classInfo.getName(),
                             fieldInfo.getName(),
                             fieldType,
@@ -300,16 +325,25 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private void outputConstructorsToCsv(
             @Nonnull List<ClassInfo> classes,
             @Nonnull String fileName,
+            @Nonnull String sourcePath,
             @Nonnull Charset charset,
             @Nonnull CSVFormat csvFormat,
             boolean quiet
     ) throws IOException {
-        var format = csvFormat.builder()
-                .setHeader("クラス名", "引数", "修飾子", "コンストラクタアノテーション", "引数アノテーション")
-                .build();
+        String fileKey = "constructors:" + fileName;
+        boolean isFirstWrite = !csvFilesCreated.contains(fileKey);
+        var format = isFirstWrite ? 
+                csvFormat.builder()
+                        .setHeader("ソースパス", "クラス名", "引数", "修飾子", "コンストラクタアノテーション", "引数アノテーション")
+                        .build() :
+                csvFormat;
 
-        try (FileWriter writer = new FileWriter(fileName, charset);
+        try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
+            
+            if (isFirstWrite) {
+                csvFilesCreated.add(fileKey);
+            }
 
             for (ClassInfo classInfo : classes) {
                 var constructors = classInfo.getConstructorInfo();
@@ -331,6 +365,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                             .collect(Collectors.joining(" | "));
 
                     printer.printRecord(
+                            sourcePath,
                             classInfo.getName(),
                             parameters,
                             constructorInfo.getModifiersStr(),
