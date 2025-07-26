@@ -128,8 +128,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             @Nonnull ApplicationArguments args
     ) throws IOException {
         var quiet = args.containsOption("quiet");
-        Path path = Paths.get(filePath);
-        var isDirectory = Files.isDirectory(path);
+        var isDirectory = Files.isDirectory(Paths.get(filePath));
 
         if (!quiet) {
             logger.info("");
@@ -147,7 +146,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
             if (allClasses.isEmpty()) {
                 if (!quiet) {
-                    logger.info("No classes found in {}.", (Files.isDirectory(Paths.get(filePath)) ? "directory" : "file"));
+                    logger.info("No classes found in {}.", (isDirectory ? "directory" : "file"));
                 }
                 return;
             }
