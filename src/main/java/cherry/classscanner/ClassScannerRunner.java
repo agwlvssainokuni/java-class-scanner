@@ -158,30 +158,26 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 logger.info("Found {} classes:", filteredClasses.size());
             }
 
-            // CSV/TSV output
+            // CSV/TSV output - determine charset and format once
             var format = args.containsOption("format") ?
                     args.getOptionValues("format").getFirst().toLowerCase() : "csv";
             var charsetName = args.containsOption("charset") ?
                     args.getOptionValues("charset").getFirst() : "UTF-8";
+            var charset = getCharset(charsetName, quiet);
+            var csvFormat = getCSVFormat(format);
 
             if (args.containsOption("methods-csv")) {
                 var methodsFile = args.getOptionValues("methods-csv").getFirst();
-                var charset = getCharset(charsetName, quiet);
-                var csvFormat = getCSVFormat(format);
                 outputMethodsToCsv(filteredClasses, methodsFile, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("fields-csv")) {
                 var fieldsFile = args.getOptionValues("fields-csv").getFirst();
-                var charset = getCharset(charsetName, quiet);
-                var csvFormat = getCSVFormat(format);
                 outputFieldsToCsv(filteredClasses, fieldsFile, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("constructors-csv")) {
                 var constructorsFile = args.getOptionValues("constructors-csv").getFirst();
-                var charset = getCharset(charsetName, quiet);
-                var csvFormat = getCSVFormat(format);
                 outputConstructorsToCsv(filteredClasses, constructorsFile, charset, csvFormat, quiet);
             }
 
