@@ -122,7 +122,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                     Path path = Paths.get(arg);
                     return Files.exists(path) && (Files.isRegularFile(path) || Files.isDirectory(path));
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void processFile(
@@ -159,7 +159,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             var filteredClasses = allClasses.stream()
                     .filter(classInfo -> matchesPackageFilter(classInfo.getName(), packageFilter))
                     .sorted(Comparator.comparing(ClassInfo::getName))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (!quiet) {
                 logger.info("Found {} classes:", filteredClasses.size());
@@ -226,29 +226,27 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             }
 
             for (ClassInfo classInfo : classes) {
-                var methods = classInfo.getMethodInfo();
-                for (var methodInfo : methods) {
-                    if (!methodInfo.getName().equals("<init>") &&
-                            !methodInfo.getName().equals("<clinit>") &&
-                            !methodInfo.getName().contains("lambda$")) {
+                var sortedMethods = classInfo.getMethodInfo().stream()
+                        .filter(this::isRegularMethod)
+                        .sorted(Comparator.comparing(MethodInfo::getName))
+                        .toList();
+                for (var methodInfo : sortedMethods) {
+                    var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
+                    var parameters = parametersToString(methodInfo.getParameterInfo());
+                    var methodAnnotations = annotationsToString(methodInfo.getAnnotationInfo());
+                    var parameterAnnotations = parameterAnnotationsToString(methodInfo.getParameterInfo());
 
-                        var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
-                        var parameters = parametersToString(methodInfo.getParameterInfo());
-                        var methodAnnotations = annotationsToString(methodInfo.getAnnotationInfo());
-                        var parameterAnnotations = parameterAnnotationsToString(methodInfo.getParameterInfo());
-
-                        printer.printRecord(
-                                sourcePath,
-                                classInfo.getName(),
-                                methodInfo.getName(),
-                                returnType,
-                                parameters,
-                                methodInfo.getModifiersStr(),
-                                methodInfo.isStatic(),
-                                methodAnnotations,
-                                parameterAnnotations
-                        );
-                    }
+                    printer.printRecord(
+                            sourcePath,
+                            classInfo.getName(),
+                            methodInfo.getName(),
+                            returnType,
+                            parameters,
+                            methodInfo.getModifiersStr(),
+                            methodInfo.isStatic(),
+                            methodAnnotations,
+                            parameterAnnotations
+                    );
                 }
             }
         }
@@ -283,8 +281,10 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             }
 
             for (ClassInfo classInfo : classes) {
-                var fields = classInfo.getFieldInfo();
-                for (var fieldInfo : fields) {
+                var sortedFields = classInfo.getFieldInfo().stream()
+                        .sorted(Comparator.comparing(FieldInfo::getName))
+                        .toList();
+                for (var fieldInfo : sortedFields) {
                     var fieldType = fieldInfo.getTypeSignatureOrTypeDescriptor().toString();
                     var fieldAnnotations = annotationsToString(fieldInfo.getAnnotationInfo());
 
@@ -331,8 +331,10 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             }
 
             for (ClassInfo classInfo : classes) {
-                var constructors = classInfo.getConstructorInfo();
-                for (var constructorInfo : constructors) {
+                var sortedConstructors = classInfo.getConstructorInfo().stream()
+                        .sorted(Comparator.comparingInt(constructorInfo -> constructorInfo.getParameterInfo().length))
+                        .toList();
+                for (var constructorInfo : sortedConstructors) {
                     var parameters = parametersToString(constructorInfo.getParameterInfo());
                     var constructorAnnotations = annotationsToString(constructorInfo.getAnnotationInfo());
                     var parameterAnnotations = parameterAnnotationsToString(constructorInfo.getParameterInfo());
@@ -448,9 +450,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         if (!methods.isEmpty()) {
             logger.info("    Methods:");
             methods.stream()
-                    .filter(methodInfo -> !methodInfo.getName().equals("<init>") &&
-                            !methodInfo.getName().equals("<clinit>") &&
-                            !methodInfo.getName().contains("lambda$"))
+                    .filter(this::isRegularMethod)
                     .sorted(Comparator.comparing(MethodInfo::getName))
                     .forEach(methodInfo -> {
                         var modifiers = methodInfo.getModifiersStr();
@@ -481,7 +481,13 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         logger.info("");
     }
 
-    // Helper methods for string conversion
+    // Helper methods for method filtering and string conversion
+    private boolean isRegularMethod(@Nonnull MethodInfo methodInfo) {
+        return !methodInfo.getName().equals("<init>") &&
+               !methodInfo.getName().equals("<clinit>") &&
+               !methodInfo.getName().contains("lambda$");
+    }
+
     @Nonnull
     private String parametersToString(@Nonnull MethodParameterInfo[] parameters) {
         return Stream.of(parameters)
