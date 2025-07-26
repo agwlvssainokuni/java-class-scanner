@@ -211,12 +211,12 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         .build() :
                 csvFormat;
 
+        if (isFirstWrite) {
+            csvFilesCreated.add(fileKey);
+        }
+
         try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
-
-            if (isFirstWrite) {
-                csvFilesCreated.add(fileKey);
-            }
 
             for (ClassInfo classInfo : classes) {
                 var sortedMethods = classInfo.getMethodInfo().stream()
@@ -266,12 +266,12 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         .build() :
                 csvFormat;
 
+        if (isFirstWrite) {
+            csvFilesCreated.add(fileKey);
+        }
+
         try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
-
-            if (isFirstWrite) {
-                csvFilesCreated.add(fileKey);
-            }
 
             for (ClassInfo classInfo : classes) {
                 var sortedFields = classInfo.getFieldInfo().stream()
@@ -316,12 +316,12 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         .build() :
                 csvFormat;
 
+        if (isFirstWrite) {
+            csvFilesCreated.add(fileKey);
+        }
+
         try (FileWriter writer = new FileWriter(fileName, charset, !isFirstWrite);  // append if not first write
              CSVPrinter printer = new CSVPrinter(writer, format)) {
-
-            if (isFirstWrite) {
-                csvFilesCreated.add(fileKey);
-            }
 
             for (ClassInfo classInfo : classes) {
                 var sortedConstructors = classInfo.getConstructorInfo().stream()
