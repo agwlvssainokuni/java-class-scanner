@@ -51,7 +51,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     public void run(@Nonnull ApplicationArguments args) throws IOException {
         if (args.getNonOptionArgs().isEmpty()) {
             if (!args.containsOption("quiet")) {
-                System.out.println("Usage: java -jar class-scanner.jar [options] <file|directory>...");
+                System.out.println("Usage: java -jar java-class-scanner.jar [options] <file|directory>...");
                 System.out.println("Options:");
                 System.out.println("  --verbose              Show detailed class information");
                 System.out.println("  --package=<package>    Filter by package name");
@@ -159,17 +159,23 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
             if (args.containsOption("methods-csv")) {
                 var methodsFile = args.getOptionValues("methods-csv").get(0);
-                outputMethodsToCsv(filteredClasses, methodsFile, format, charsetName, quiet);
+                var charset = getCharset(charsetName, quiet);
+                var csvFormat = getCSVFormat(format);
+                outputMethodsToCsv(filteredClasses, methodsFile, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("fields-csv")) {
                 var fieldsFile = args.getOptionValues("fields-csv").get(0);
-                outputFieldsToCsv(filteredClasses, fieldsFile, format, charsetName, quiet);
+                var charset = getCharset(charsetName, quiet);
+                var csvFormat = getCSVFormat(format);
+                outputFieldsToCsv(filteredClasses, fieldsFile, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("constructors-csv")) {
                 var constructorsFile = args.getOptionValues("constructors-csv").get(0);
-                outputConstructorsToCsv(filteredClasses, constructorsFile, format, charsetName, quiet);
+                var charset = getCharset(charsetName, quiet);
+                var csvFormat = getCSVFormat(format);
+                outputConstructorsToCsv(filteredClasses, constructorsFile, charset, csvFormat, quiet);
             }
 
             // Standard output
@@ -189,19 +195,16 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private void outputMethodsToCsv(
             @Nonnull List<ClassInfo> classes,
             @Nonnull String fileName,
-            @Nonnull String format,
-            @Nonnull String charsetName,
+            @Nonnull Charset charset,
+            @Nonnull CSVFormat csvFormat,
             boolean quiet
     ) throws IOException {
-        var charset = getCharset(charsetName, quiet);
-
-        var csvFormat = getCSVFormat(format)
-                .builder()
+        var format = csvFormat.builder()
                 .setHeader("クラス名", "メソッド名", "返却値", "引数", "修飾子", "IsStatic")
                 .build();
 
         try (FileWriter writer = new FileWriter(fileName, charset);
-             CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
+             CSVPrinter printer = new CSVPrinter(writer, format)) {
 
             for (ClassInfo classInfo : classes) {
                 var methods = classInfo.getMethodInfo();
@@ -230,26 +233,24 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         }
 
         if (!quiet) {
-            System.out.println("Methods " + format.toUpperCase() + " generated: " + fileName + " (encoding: " + charset + ")");
+            var formatName = csvFormat == CSVFormat.TDF ? "TSV" : "CSV";
+            System.out.println("Methods " + formatName + " generated: " + fileName + " (encoding: " + charset + ")");
         }
     }
 
     private void outputFieldsToCsv(
             @Nonnull List<ClassInfo> classes,
             @Nonnull String fileName,
-            @Nonnull String format,
-            @Nonnull String charsetName,
+            @Nonnull Charset charset,
+            @Nonnull CSVFormat csvFormat,
             boolean quiet
     ) throws IOException {
-        var charset = getCharset(charsetName, quiet);
-
-        var csvFormat = getCSVFormat(format)
-                .builder()
+        var format = csvFormat.builder()
                 .setHeader("クラス名", "フィールド名", "フィールド型", "修飾子", "IsStatic")
                 .build();
 
         try (FileWriter writer = new FileWriter(fileName, charset);
-             CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
+             CSVPrinter printer = new CSVPrinter(writer, format)) {
 
             for (ClassInfo classInfo : classes) {
                 var fields = classInfo.getFieldInfo();
@@ -268,26 +269,24 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         }
 
         if (!quiet) {
-            System.out.println("Fields " + format.toUpperCase() + " generated: " + fileName + " (encoding: " + charset + ")");
+            var formatName = csvFormat == CSVFormat.TDF ? "TSV" : "CSV";
+            System.out.println("Fields " + formatName + " generated: " + fileName + " (encoding: " + charset + ")");
         }
     }
 
     private void outputConstructorsToCsv(
             @Nonnull List<ClassInfo> classes,
             @Nonnull String fileName,
-            @Nonnull String format,
-            @Nonnull String charsetName,
+            @Nonnull Charset charset,
+            @Nonnull CSVFormat csvFormat,
             boolean quiet
     ) throws IOException {
-        var charset = getCharset(charsetName, quiet);
-
-        var csvFormat = getCSVFormat(format)
-                .builder()
+        var format = csvFormat.builder()
                 .setHeader("クラス名", "引数", "修飾子")
                 .build();
 
         try (FileWriter writer = new FileWriter(fileName, charset);
-             CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
+             CSVPrinter printer = new CSVPrinter(writer, format)) {
 
             for (ClassInfo classInfo : classes) {
                 var constructors = classInfo.getConstructorInfo();
@@ -307,7 +306,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         }
 
         if (!quiet) {
-            System.out.println("Constructors " + format.toUpperCase() + " generated: " + fileName + " (encoding: " + charset + ")");
+            var formatName = csvFormat == CSVFormat.TDF ? "TSV" : "CSV";
+            System.out.println("Constructors " + formatName + " generated: " + fileName + " (encoding: " + charset + ")");
         }
     }
 
