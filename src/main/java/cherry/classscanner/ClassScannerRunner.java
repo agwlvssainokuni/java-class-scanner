@@ -16,6 +16,7 @@
 
 package cherry.classscanner;
 
+import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.FieldInfo;
@@ -203,7 +204,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             boolean quiet
     ) throws IOException {
         var format = csvFormat.builder()
-                .setHeader("クラス名", "メソッド名", "返却値", "引数", "修飾子", "IsStatic")
+                .setHeader("クラス名", "メソッド名", "返却値", "引数", "修飾子", "IsStatic", "メソッドアノテーション", "引数アノテーション")
                 .build();
 
         try (FileWriter writer = new FileWriter(fileName, charset);
@@ -217,10 +218,21 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                             !methodInfo.getName().contains("lambda$")) {
 
                         var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
-                        var parameters = methodInfo.getParameterInfo().length > 0 ?
-                                java.util.Arrays.stream(methodInfo.getParameterInfo())
-                                        .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
-                                        .collect(Collectors.joining(", ")) : "";
+                        var parameters = Stream.of(methodInfo.getParameterInfo())
+                                .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
+                                .collect(Collectors.joining(", "));
+
+                        // Get method annotations
+                        var methodAnnotations = methodInfo.getAnnotationInfo().stream()
+                                .map(AnnotationInfo::getName)
+                                .collect(Collectors.joining(", "));
+
+                        // Get parameter annotations
+                        var parameterAnnotations = Stream.of(methodInfo.getParameterInfo())
+                                .map(param -> param.getAnnotationInfo().stream()
+                                        .map(AnnotationInfo::getName)
+                                        .collect(Collectors.joining(";")))
+                                .collect(Collectors.joining(" | "));
 
                         printer.printRecord(
                                 classInfo.getName(),
@@ -228,7 +240,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                                 returnType,
                                 parameters,
                                 methodInfo.getModifiersStr(),
-                                methodInfo.isStatic()
+                                methodInfo.isStatic(),
+                                methodAnnotations,
+                                parameterAnnotations
                         );
                     }
                 }
@@ -249,7 +263,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             boolean quiet
     ) throws IOException {
         var format = csvFormat.builder()
-                .setHeader("クラス名", "フィールド名", "フィールド型", "修飾子", "IsStatic")
+                .setHeader("クラス名", "フィールド名", "フィールド型", "修飾子", "IsStatic", "フィールドアノテーション")
                 .build();
 
         try (FileWriter writer = new FileWriter(fileName, charset);
@@ -259,13 +273,19 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 var fields = classInfo.getFieldInfo();
                 for (var fieldInfo : fields) {
                     var fieldType = fieldInfo.getTypeSignatureOrTypeDescriptor().toString();
+                    
+                    // Get field annotations
+                    var fieldAnnotations = fieldInfo.getAnnotationInfo().stream()
+                            .map(AnnotationInfo::getName)
+                            .collect(Collectors.joining(", "));
 
                     printer.printRecord(
                             classInfo.getName(),
                             fieldInfo.getName(),
                             fieldType,
                             fieldInfo.getModifiersStr(),
-                            fieldInfo.isStatic()
+                            fieldInfo.isStatic(),
+                            fieldAnnotations
                     );
                 }
             }
@@ -285,7 +305,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             boolean quiet
     ) throws IOException {
         var format = csvFormat.builder()
-                .setHeader("クラス名", "引数", "修飾子")
+                .setHeader("クラス名", "引数", "修飾子", "コンストラクタアノテーション", "引数アノテーション")
                 .build();
 
         try (FileWriter writer = new FileWriter(fileName, charset);
@@ -294,15 +314,28 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             for (ClassInfo classInfo : classes) {
                 var constructors = classInfo.getConstructorInfo();
                 for (var constructorInfo : constructors) {
-                    var parameters = constructorInfo.getParameterInfo().length > 0 ?
-                            java.util.Arrays.stream(constructorInfo.getParameterInfo())
-                                    .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
-                                    .collect(Collectors.joining(", ")) : "";
+                    var parameters = Stream.of(constructorInfo.getParameterInfo())
+                            .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
+                            .collect(Collectors.joining(", "));
+
+                    // Get constructor annotations
+                    var constructorAnnotations = constructorInfo.getAnnotationInfo().stream()
+                            .map(AnnotationInfo::getName)
+                            .collect(Collectors.joining(", "));
+
+                    // Get parameter annotations
+                    var parameterAnnotations = Stream.of(constructorInfo.getParameterInfo())
+                            .map(param -> param.getAnnotationInfo().stream()
+                                    .map(AnnotationInfo::getName)
+                                    .collect(Collectors.joining(";")))
+                            .collect(Collectors.joining(" | "));
 
                     printer.printRecord(
                             classInfo.getName(),
                             parameters,
-                            constructorInfo.getModifiersStr()
+                            constructorInfo.getModifiersStr(),
+                            constructorAnnotations,
+                            parameterAnnotations
                     );
                 }
             }
@@ -396,7 +429,14 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var type = fieldInfo.getTypeSignatureOrTypeDescriptor().toString();
                         var name = fieldInfo.getName();
                         var fieldType = fieldInfo.isStatic() ? "class variable" : "instance variable";
-                        logger.info("      {} {} {} ({})", modifiers, type, name, fieldType);
+                        
+                        // Get field annotations
+                        var fieldAnnotations = fieldInfo.getAnnotationInfo().stream()
+                                .map(AnnotationInfo::getName)
+                                .collect(Collectors.joining(", "));
+                        
+                        var annotationStr = fieldAnnotations.isEmpty() ? "" : "[" + fieldAnnotations + "] ";
+                        logger.info("      {}{} {} {} ({})", annotationStr, modifiers, type, name, fieldType);
                     });
         }
 
@@ -416,7 +456,14 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var params = Stream.of(methodInfo.getParameterInfo())
                                 .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
                                 .collect(Collectors.joining(", "));
-                        logger.info("      {} {} {}({})", modifiers, returnType, name, params);
+                        
+                        // Get method annotations
+                        var methodAnnotations = methodInfo.getAnnotationInfo().stream()
+                                .map(AnnotationInfo::getName)
+                                .collect(Collectors.joining(", "));
+                        
+                        var annotationStr = methodAnnotations.isEmpty() ? "" : "[" + methodAnnotations + "] ";
+                        logger.info("      {}{} {} {}({})", annotationStr, modifiers, returnType, name, params);
                     });
         }
 
@@ -431,7 +478,14 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var params = Stream.of(constructorInfo.getParameterInfo())
                                 .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
                                 .collect(Collectors.joining(", "));
-                        logger.info("      {} {}({})", modifiers, classInfo.getSimpleName(), params);
+                        
+                        // Get constructor annotations
+                        var constructorAnnotations = constructorInfo.getAnnotationInfo().stream()
+                                .map(AnnotationInfo::getName)
+                                .collect(Collectors.joining(", "));
+                        
+                        var annotationStr = constructorAnnotations.isEmpty() ? "" : "[" + constructorAnnotations + "] ";
+                        logger.info("      {}{} {}({})", annotationStr, modifiers, classInfo.getSimpleName(), params);
                     });
         }
 
