@@ -233,22 +233,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                             !methodInfo.getName().contains("lambda$")) {
 
                         var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
-                        var parameters = Stream.of(methodInfo.getParameterInfo())
-                                .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
-                                .map(TypeSignature::toString)
-                                .collect(Collectors.joining(", "));
-
-                        // Get method annotations
-                        var methodAnnotations = methodInfo.getAnnotationInfo().stream()
-                                .map(AnnotationInfo::getName)
-                                .collect(Collectors.joining(", "));
-
-                        // Get parameter annotations
-                        var parameterAnnotations = Stream.of(methodInfo.getParameterInfo())
-                                .map(param -> param.getAnnotationInfo().stream()
-                                        .map(AnnotationInfo::getName)
-                                        .collect(Collectors.joining(";")))
-                                .collect(Collectors.joining(" | "));
+                        var parameters = parametersToString(methodInfo.getParameterInfo());
+                        var methodAnnotations = annotationsToString(methodInfo.getAnnotationInfo());
+                        var parameterAnnotations = parameterAnnotationsToString(methodInfo.getParameterInfo());
 
                         printer.printRecord(
                                 sourcePath,
@@ -299,11 +286,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 var fields = classInfo.getFieldInfo();
                 for (var fieldInfo : fields) {
                     var fieldType = fieldInfo.getTypeSignatureOrTypeDescriptor().toString();
-                    
-                    // Get field annotations
-                    var fieldAnnotations = fieldInfo.getAnnotationInfo().stream()
-                            .map(AnnotationInfo::getName)
-                            .collect(Collectors.joining(", "));
+                    var fieldAnnotations = annotationsToString(fieldInfo.getAnnotationInfo());
 
                     printer.printRecord(
                             sourcePath,
@@ -350,22 +333,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             for (ClassInfo classInfo : classes) {
                 var constructors = classInfo.getConstructorInfo();
                 for (var constructorInfo : constructors) {
-                    var parameters = Stream.of(constructorInfo.getParameterInfo())
-                            .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
-                            .map(TypeSignature::toString)
-                            .collect(Collectors.joining(", "));
-
-                    // Get constructor annotations
-                    var constructorAnnotations = constructorInfo.getAnnotationInfo().stream()
-                            .map(AnnotationInfo::getName)
-                            .collect(Collectors.joining(", "));
-
-                    // Get parameter annotations
-                    var parameterAnnotations = Stream.of(constructorInfo.getParameterInfo())
-                            .map(param -> param.getAnnotationInfo().stream()
-                                    .map(AnnotationInfo::getName)
-                                    .collect(Collectors.joining(";")))
-                            .collect(Collectors.joining(" | "));
+                    var parameters = parametersToString(constructorInfo.getParameterInfo());
+                    var constructorAnnotations = annotationsToString(constructorInfo.getAnnotationInfo());
+                    var parameterAnnotations = parameterAnnotationsToString(constructorInfo.getParameterInfo());
 
                     printer.printRecord(
                             sourcePath,
@@ -467,12 +437,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var type = fieldInfo.getTypeSignatureOrTypeDescriptor().toString();
                         var name = fieldInfo.getName();
                         var fieldType = fieldInfo.isStatic() ? "class variable" : "instance variable";
-                        
-                        // Get field annotations
-                        var fieldAnnotations = fieldInfo.getAnnotationInfo().stream()
-                                .map(AnnotationInfo::getName)
-                                .collect(Collectors.joining(", "));
-                        
+                        var fieldAnnotations = annotationsToString(fieldInfo.getAnnotationInfo());
                         var annotationStr = fieldAnnotations.isEmpty() ? "" : "[" + fieldAnnotations + "] ";
                         logger.info("      {}{} {} {} ({})", annotationStr, modifiers, type, name, fieldType);
                     });
@@ -491,16 +456,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var modifiers = methodInfo.getModifiersStr();
                         var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
                         var name = methodInfo.getName();
-                        var params = Stream.of(methodInfo.getParameterInfo())
-                                .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
-                                .map(TypeSignature::toString)
-                                .collect(Collectors.joining(", "));
-                        
-                        // Get method annotations
-                        var methodAnnotations = methodInfo.getAnnotationInfo().stream()
-                                .map(AnnotationInfo::getName)
-                                .collect(Collectors.joining(", "));
-                        
+                        var params = parametersToString(methodInfo.getParameterInfo());
+                        var methodAnnotations = annotationsToString(methodInfo.getAnnotationInfo());
                         var annotationStr = methodAnnotations.isEmpty() ? "" : "[" + methodAnnotations + "] ";
                         logger.info("      {}{} {} {}({})", annotationStr, modifiers, returnType, name, params);
                     });
@@ -514,21 +471,38 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                     .sorted(Comparator.comparingInt(constructorInfo -> constructorInfo.getParameterInfo().length))
                     .forEach(constructorInfo -> {
                         var modifiers = constructorInfo.getModifiersStr();
-                        var params = Stream.of(constructorInfo.getParameterInfo())
-                                .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
-                                .map(TypeSignature::toString)
-                                .collect(Collectors.joining(", "));
-                        
-                        // Get constructor annotations
-                        var constructorAnnotations = constructorInfo.getAnnotationInfo().stream()
-                                .map(AnnotationInfo::getName)
-                                .collect(Collectors.joining(", "));
-                        
+                        var params = parametersToString(constructorInfo.getParameterInfo());
+                        var constructorAnnotations = annotationsToString(constructorInfo.getAnnotationInfo());
                         var annotationStr = constructorAnnotations.isEmpty() ? "" : "[" + constructorAnnotations + "] ";
                         logger.info("      {}{} {}({})", annotationStr, modifiers, classInfo.getSimpleName(), params);
                     });
         }
 
         logger.info("");
+    }
+
+    // Helper methods for string conversion
+    @Nonnull
+    private String parametersToString(@Nonnull MethodParameterInfo[] parameters) {
+        return Stream.of(parameters)
+                .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
+                .map(TypeSignature::toString)
+                .collect(Collectors.joining(", "));
+    }
+
+    @Nonnull
+    private String annotationsToString(@Nonnull List<AnnotationInfo> annotations) {
+        return annotations.stream()
+                .map(AnnotationInfo::getName)
+                .collect(Collectors.joining(", "));
+    }
+
+    @Nonnull
+    private String parameterAnnotationsToString(@Nonnull MethodParameterInfo[] parameters) {
+        return Stream.of(parameters)
+                .map(param -> param.getAnnotationInfo().stream()
+                        .map(AnnotationInfo::getName)
+                        .collect(Collectors.joining(";")))
+                .collect(Collectors.joining(" | "));
     }
 }
