@@ -78,3 +78,30 @@ The application supports multiple output modes:
 - `--format=<format>`: Output format (csv/tsv)
 - `--charset=<charset>`: Character encoding
 - `--quiet`: Suppress standard output
+
+## Architecture Details
+
+### CSV Output Strategy
+The application uses an append mode strategy for CSV files to handle multiple input sources:
+- **First write**: Overwrites file with headers
+- **Subsequent writes**: Appends data only
+- **File tracking**: Uses type-specific keys (`methods:filename.csv`, `fields:filename.csv`, `constructors:filename.csv`) to manage header state independently for each CSV type
+
+### CSV Column Structure
+All CSV outputs include a source path column as the first column:
+- **Methods**: `ソースパス, クラス名, メソッド名, 返却値, 引数, 修飾子, IsStatic, メソッドアノテーション, 引数アノテーション`
+- **Fields**: `ソースパス, クラス名, フィールド名, フィールド型, 修飾子, IsStatic, フィールドアノテーション`
+- **Constructors**: `ソースパス, クラス名, 引数, 修飾子, コンストラクタアノテーション, 引数アノテーション`
+
+### Logging Configuration
+- **Message-only format**: `logging.pattern.console=%msg%n` (no timestamps or levels shown)
+- **ClassScannerRunner**: INFO level for application output
+- **Framework components**: WARN level to reduce noise
+- Uses SLF4J with logger instance obtained via `getClass()`
+
+### Key Implementation Patterns
+- **Method references**: Uses `Comparator.comparing()` and `AnnotationInfo::getName` for clean code
+- **Stream processing**: Leverages `Stream.of()` consistently instead of `Arrays.stream()`
+- **Annotation handling**: Extracts both element-level and parameter-level annotations
+- **Resource management**: Proper try-with-resources for file operations
+- **Java 21 features**: Uses `getFirst()` method for list access
