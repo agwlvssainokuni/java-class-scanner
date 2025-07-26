@@ -24,6 +24,8 @@ import jakarta.annotation.Nullable;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
@@ -45,22 +47,23 @@ import java.util.stream.Stream;
 @Component
 public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private int exitCode = 0;
 
     @Override
     public void run(@Nonnull ApplicationArguments args) throws IOException {
         if (args.getNonOptionArgs().isEmpty()) {
             if (!args.containsOption("quiet")) {
-                System.out.println("Usage: java -jar java-class-scanner.jar [options] <file|directory>...");
-                System.out.println("Options:");
-                System.out.println("  --verbose              Show detailed class information");
-                System.out.println("  --package=<package>    Filter by package name");
-                System.out.println("  --methods-csv=<file>   Output methods to CSV file");
-                System.out.println("  --fields-csv=<file>    Output fields to CSV file");
-                System.out.println("  --constructors-csv=<file> Output constructors to CSV file");
-                System.out.println("  --format=<format>      Output format: csv or tsv (default: csv)");
-                System.out.println("  --charset=<charset>    Character encoding for CSV files (default: UTF-8)");
-                System.out.println("  --quiet                Suppress standard output");
+                logger.info("Usage: java -jar java-class-scanner.jar [options] <file|directory>...");
+                logger.info("Options:");
+                logger.info("  --verbose              Show detailed class information");
+                logger.info("  --package=<package>    Filter by package name");
+                logger.info("  --methods-csv=<file>   Output methods to CSV file");
+                logger.info("  --fields-csv=<file>    Output fields to CSV file");
+                logger.info("  --constructors-csv=<file> Output constructors to CSV file");
+                logger.info("  --format=<format>      Output format: csv or tsv (default: csv)");
+                logger.info("  --charset=<charset>    Character encoding for CSV files (default: UTF-8)");
+                logger.info("  --quiet                Suppress standard output");
             }
             exitCode = 0;
             return;
@@ -71,7 +74,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             exitCode = 0;
         } catch (IOException e) {
             if (!args.containsOption("quiet")) {
-                System.out.println("Error processing files: " + e.getMessage());
+                logger.error("Error processing files: {}", e.getMessage());
             }
             exitCode = 1;
         }
@@ -89,7 +92,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         if (files.isEmpty()) {
             if (!args.containsOption("quiet")) {
-                System.out.println("No processable files or directories found in arguments.");
+                logger.warn("No processable files or directories found in arguments.");
             }
             return;
         }
@@ -120,7 +123,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         var isDirectory = Files.isDirectory(path);
 
         if (!quiet) {
-            System.out.println("\n=== Analyzing " + (isDirectory ? "directory" : "file") + ": " + filePath + " ===");
+            logger.info("");
+            logger.info("=== Analyzing {} : {} ===", (isDirectory ? "directory" : "file"), filePath);
         }
 
         // Create a clean ClassGraph instance that only scans the specified file
@@ -134,7 +138,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
             if (allClasses.isEmpty()) {
                 if (!quiet) {
-                    System.out.println("No classes found in " + (Files.isDirectory(Paths.get(filePath)) ? "directory." : "file."));
+                    logger.info("No classes found in {}.", (Files.isDirectory(Paths.get(filePath)) ? "directory" : "file"));
                 }
                 return;
             }
@@ -148,7 +152,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                     .collect(Collectors.toList());
 
             if (!quiet) {
-                System.out.println("Found " + filteredClasses.size() + " classes:");
+                logger.info("Found {} classes:", filteredClasses.size());
             }
 
             // CSV/TSV output
@@ -185,7 +189,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                     if (verbose) {
                         printVerboseClassInfo(classInfo);
                     } else {
-                        System.out.println("  " + classInfo.getName());
+                        logger.info("  {}", classInfo.getName());
                     }
                 });
             }
@@ -234,7 +238,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         if (!quiet) {
             var formatName = csvFormat == CSVFormat.TDF ? "TSV" : "CSV";
-            System.out.println("Methods " + formatName + " generated: " + fileName + " (encoding: " + charset + ")");
+            logger.info("Methods {} generated: {} (encoding: {})", formatName, fileName, charset);
         }
     }
 
@@ -270,7 +274,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         if (!quiet) {
             var formatName = csvFormat == CSVFormat.TDF ? "TSV" : "CSV";
-            System.out.println("Fields " + formatName + " generated: " + fileName + " (encoding: " + charset + ")");
+            logger.info("Fields {} generated: {} (encoding: {})", formatName, fileName, charset);
         }
     }
 
@@ -307,7 +311,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         if (!quiet) {
             var formatName = csvFormat == CSVFormat.TDF ? "TSV" : "CSV";
-            System.out.println("Constructors " + formatName + " generated: " + fileName + " (encoding: " + charset + ")");
+            logger.info("Constructors {} generated: {} (encoding: {})", formatName, fileName, charset);
         }
     }
 
@@ -317,7 +321,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             case "tsv" -> CSVFormat.TDF;
             case "csv" -> CSVFormat.DEFAULT;
             default -> {
-                System.out.println("Warning: Unknown format '" + format + "', using CSV");
+                logger.warn("Warning: Unknown format '{}', using CSV", format);
                 yield CSVFormat.DEFAULT;
             }
         };
@@ -329,7 +333,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             return Charset.forName(charsetName);
         } catch (UnsupportedCharsetException | IllegalCharsetNameException e) {
             if (!quiet) {
-                System.out.println("Warning: Invalid charset '" + charsetName + "', using UTF-8");
+                logger.warn("Warning: Invalid charset '{}', using UTF-8", charsetName);
             }
             return StandardCharsets.UTF_8;
         }
@@ -354,38 +358,38 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private void printVerboseClassInfo(
             @Nonnull ClassInfo classInfo
     ) {
-        System.out.println("  " + classInfo.getName());
+        logger.info("  {}", classInfo.getName());
 
         if (classInfo.isInterface()) {
-            System.out.println("    Type: Interface");
+            logger.info("    Type: Interface");
         } else if (classInfo.isAbstract()) {
-            System.out.println("    Type: Abstract Class");
+            logger.info("    Type: Abstract Class");
         } else if (classInfo.isEnum()) {
-            System.out.println("    Type: Enum");
+            logger.info("    Type: Enum");
         } else if (classInfo.isAnnotation()) {
-            System.out.println("    Type: Annotation");
+            logger.info("    Type: Annotation");
         } else {
-            System.out.println("    Type: Class");
+            logger.info("    Type: Class");
         }
 
         if (classInfo.getSuperclass() != null) {
-            System.out.println("    Superclass: " + classInfo.getSuperclass().getName());
+            logger.info("    Superclass: {}", classInfo.getSuperclass().getName());
         }
 
         if (!classInfo.getInterfaces().isEmpty()) {
-            System.out.println("    Interfaces: " +
+            logger.info("    Interfaces: {}",
                     classInfo.getInterfaces().stream()
                             .map(ClassInfo::getName)
                             .reduce((a, b) -> a + ", " + b)
                             .orElse(""));
         }
 
-        System.out.println("    Package: " + classInfo.getPackageName());
+        logger.info("    Package: {}", classInfo.getPackageName());
 
         // Print fields (class variables and instance variables)
         var fields = classInfo.getFieldInfo();
         if (!fields.isEmpty()) {
-            System.out.println("    Fields:");
+            logger.info("    Fields:");
             fields.stream()
                     .sorted((a, b) -> a.getName().compareTo(b.getName()))
                     .forEach(fieldInfo -> {
@@ -393,14 +397,14 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var type = fieldInfo.getTypeSignatureOrTypeDescriptor().toString();
                         var name = fieldInfo.getName();
                         var fieldType = fieldInfo.isStatic() ? "class variable" : "instance variable";
-                        System.out.println("      " + modifiers + " " + type + " " + name + " (" + fieldType + ")");
+                        logger.info("      {} {} {} ({})", modifiers, type, name, fieldType);
                     });
         }
 
         // Print methods
         var methods = classInfo.getMethodInfo();
         if (!methods.isEmpty()) {
-            System.out.println("    Methods:");
+            logger.info("    Methods:");
             methods.stream()
                     .filter(methodInfo -> !methodInfo.getName().equals("<init>") &&
                             !methodInfo.getName().equals("<clinit>") &&
@@ -413,14 +417,14 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var params = Stream.of(methodInfo.getParameterInfo())
                                 .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
                                 .collect(Collectors.joining(", "));
-                        System.out.println("      " + modifiers + " " + returnType + " " + name + "(" + params + ")");
+                        logger.info("      {} {} {}({})", modifiers, returnType, name, params);
                     });
         }
 
         // Print constructors
         var constructors = classInfo.getConstructorInfo();
         if (!constructors.isEmpty()) {
-            System.out.println("    Constructors:");
+            logger.info("    Constructors:");
             constructors.stream()
                     .sorted((a, b) -> Integer.compare(a.getParameterInfo().length, b.getParameterInfo().length))
                     .forEach(constructorInfo -> {
@@ -428,10 +432,10 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                         var params = Stream.of(constructorInfo.getParameterInfo())
                                 .map(param -> param.getTypeSignatureOrTypeDescriptor().toString())
                                 .collect(Collectors.joining(", "));
-                        System.out.println("      " + modifiers + " " + classInfo.getSimpleName() + "(" + params + ")");
+                        logger.info("      {} {}({})", modifiers, classInfo.getSimpleName(), params);
                     });
         }
 
-        System.out.println();
+        logger.info("");
     }
 }
