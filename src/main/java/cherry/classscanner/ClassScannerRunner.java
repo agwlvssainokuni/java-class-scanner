@@ -18,6 +18,8 @@ package cherry.classscanner;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
+import io.github.classgraph.FieldInfo;
+import io.github.classgraph.MethodInfo;
 import io.github.classgraph.ScanResult;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -40,6 +42,7 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,7 +54,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private int exitCode = 0;
 
     @Override
-    public void run(@Nonnull ApplicationArguments args) throws IOException {
+    public void run(@Nonnull ApplicationArguments args) {
         if (args.getNonOptionArgs().isEmpty()) {
             if (!args.containsOption("quiet")) {
                 logger.info("Usage: java -jar java-class-scanner.jar [options] <file|directory>...");
@@ -148,7 +151,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
             var filteredClasses = allClasses.stream()
                     .filter(classInfo -> matchesPackageFilter(classInfo.getName(), packageFilter))
-                    .sorted((a, b) -> a.getName().compareTo(b.getName()))
+                    .sorted(Comparator.comparing(ClassInfo::getName))
                     .collect(Collectors.toList());
 
             if (!quiet) {
@@ -157,26 +160,26 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
             // CSV/TSV output
             var format = args.containsOption("format") ?
-                    args.getOptionValues("format").get(0).toLowerCase() : "csv";
+                    args.getOptionValues("format").getFirst().toLowerCase() : "csv";
             var charsetName = args.containsOption("charset") ?
-                    args.getOptionValues("charset").get(0) : "UTF-8";
+                    args.getOptionValues("charset").getFirst() : "UTF-8";
 
             if (args.containsOption("methods-csv")) {
-                var methodsFile = args.getOptionValues("methods-csv").get(0);
+                var methodsFile = args.getOptionValues("methods-csv").getFirst();
                 var charset = getCharset(charsetName, quiet);
                 var csvFormat = getCSVFormat(format);
                 outputMethodsToCsv(filteredClasses, methodsFile, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("fields-csv")) {
-                var fieldsFile = args.getOptionValues("fields-csv").get(0);
+                var fieldsFile = args.getOptionValues("fields-csv").getFirst();
                 var charset = getCharset(charsetName, quiet);
                 var csvFormat = getCSVFormat(format);
                 outputFieldsToCsv(filteredClasses, fieldsFile, charset, csvFormat, quiet);
             }
 
             if (args.containsOption("constructors-csv")) {
-                var constructorsFile = args.getOptionValues("constructors-csv").get(0);
+                var constructorsFile = args.getOptionValues("constructors-csv").getFirst();
                 var charset = getCharset(charsetName, quiet);
                 var csvFormat = getCSVFormat(format);
                 outputConstructorsToCsv(filteredClasses, constructorsFile, charset, csvFormat, quiet);
@@ -391,7 +394,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         if (!fields.isEmpty()) {
             logger.info("    Fields:");
             fields.stream()
-                    .sorted((a, b) -> a.getName().compareTo(b.getName()))
+                    .sorted(Comparator.comparing(FieldInfo::getName))
                     .forEach(fieldInfo -> {
                         var modifiers = fieldInfo.getModifiersStr();
                         var type = fieldInfo.getTypeSignatureOrTypeDescriptor().toString();
@@ -409,7 +412,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                     .filter(methodInfo -> !methodInfo.getName().equals("<init>") &&
                             !methodInfo.getName().equals("<clinit>") &&
                             !methodInfo.getName().contains("lambda$"))
-                    .sorted((a, b) -> a.getName().compareTo(b.getName()))
+                    .sorted(Comparator.comparing(MethodInfo::getName))
                     .forEach(methodInfo -> {
                         var modifiers = methodInfo.getModifiersStr();
                         var returnType = methodInfo.getTypeSignatureOrTypeDescriptor().getResultType().toString();
@@ -426,7 +429,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         if (!constructors.isEmpty()) {
             logger.info("    Constructors:");
             constructors.stream()
-                    .sorted((a, b) -> Integer.compare(a.getParameterInfo().length, b.getParameterInfo().length))
+                    .sorted(Comparator.comparingInt(constructorInfo -> constructorInfo.getParameterInfo().length))
                     .forEach(constructorInfo -> {
                         var modifiers = constructorInfo.getModifiersStr();
                         var params = Stream.of(constructorInfo.getParameterInfo())
