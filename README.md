@@ -16,7 +16,7 @@ Java Class Scannerは、JARファイルやディレクトリ内のJavaクラス�
 ## 必要な環境
 
 - Java 21 以上
-- Gradle 8.x（ビルド時）
+- Gradle 9.x（ビルド時）
 
 ## ビルド方法
 
@@ -150,11 +150,11 @@ java -jar java-class-scanner.jar --methods-csv=all-methods.csv app1.jar app2.jar
 
 ## 技術仕様
 
-- **フレームワーク**: Spring Boot 3.5.4
+- **フレームワーク**: Spring Boot 4.0.5
 - **Java バージョン**: Java 21
 - **主要ライブラリ**:
-  - ClassGraph 4.8.165 (クラス解析)
-  - Apache Commons CSV 1.10.0 (CSV出力)
+  - ClassGraph 4.8.184 (クラス解析)
+  - Apache Commons CSV 1.14.1 (CSV出力)
   - Apache Commons Lang3 (ユーティリティ)
 
 ### アーキテクチャの特徴

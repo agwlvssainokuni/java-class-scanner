@@ -40,9 +40,9 @@ This is a Spring Boot command-line application that scans Java class files and d
 
 ### Key Technologies
 
-- **Spring Boot 3.5.4** with Java 21
-- **ClassGraph 4.8.165**: Primary library for scanning and analyzing Java classes
-- **Apache Commons CSV 1.10.0**: For CSV/TSV output generation
+- **Spring Boot 4.0.5** with Java 21
+- **ClassGraph 4.8.184**: Primary library for scanning and analyzing Java classes
+- **Apache Commons CSV 1.14.1**: For CSV/TSV output generation
 - **Gradle**: Build system with Spring Boot plugin
 
 ### Application Flow
