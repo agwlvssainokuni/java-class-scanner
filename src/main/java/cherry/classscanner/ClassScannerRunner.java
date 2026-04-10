@@ -208,7 +208,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         var format = isFirstWrite ?
                 csvFormat.builder()
                         .setHeader("ソースパス", "クラス名", "メソッド名", "返却値", "引数", "修飾子", "IsStatic", "メソッドアノテーション", "引数アノテーション")
-                        .build() :
+                        .get() :
                 csvFormat;
 
         if (isFirstWrite) {
@@ -263,7 +263,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         var format = isFirstWrite ?
                 csvFormat.builder()
                         .setHeader("ソースパス", "クラス名", "フィールド名", "フィールド型", "修飾子", "IsStatic", "フィールドアノテーション")
-                        .build() :
+                        .get() :
                 csvFormat;
 
         if (isFirstWrite) {
@@ -313,7 +313,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         var format = isFirstWrite ?
                 csvFormat.builder()
                         .setHeader("ソースパス", "クラス名", "引数", "修飾子", "コンストラクタアノテーション", "引数アノテーション")
-                        .build() :
+                        .get() :
                 csvFormat;
 
         if (isFirstWrite) {
