@@ -15,7 +15,7 @@ Java Class Scanner is a command-line tool that analyzes Java class files in JAR 
 
 ## Requirements
 
-- Java 21 or higher
+- Java 25 or higher
 - Gradle 9.x (for building)
 
 ## Build
@@ -150,15 +150,15 @@ java -jar java-class-scanner.jar --methods-csv=all-methods.csv app1.jar app2.jar
 
 ## Technical Specifications
 
-- **Framework**: Spring Boot 4.0.5
-- **Java Version**: Java 21
+- **Framework**: Spring Boot 4.1.0
+- **Java Version**: Java 25
 - **Key Libraries**:
   - ClassGraph 4.8.184 (class analysis)
   - Apache Commons CSV 1.14.1 (CSV output)
   - Apache Commons Lang3 (utilities)
 
 ### Architecture Features
-- **Modern Java Features**: Utilizes Java 21's `toList()`, method references, and switch expressions
+- **Modern Java Features**: Utilizes Java 25's `toList()`, method references, and switch expressions
 - **Code Quality**: Helper method extraction based on DRY principles
 - **CSV Output Optimization**: Efficient file processing with header management and append mode
 - **Comprehensive Sorting**: Consistent sorting across all outputs

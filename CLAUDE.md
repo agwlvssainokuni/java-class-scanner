@@ -40,7 +40,7 @@ This is a Spring Boot command-line application that scans Java class files and d
 
 ### Key Technologies
 
-- **Spring Boot 4.0.5** with Java 21
+- **Spring Boot 4.1.0** with Java 25
 - **ClassGraph 4.8.184**: Primary library for scanning and analyzing Java classes
 - **Apache Commons CSV 1.14.1**: For CSV/TSV output generation
 - **Gradle**: Build system with Spring Boot plugin
@@ -104,7 +104,7 @@ All CSV outputs include a source path column as the first column:
 - **Stream processing**: Leverages `Stream.of()` consistently instead of `Arrays.stream()` with `toList()` instead of `Collectors.toList()`
 - **Annotation handling**: Extracts both element-level and parameter-level annotations with formatted output (pipe separators for parameters)
 - **Resource management**: Proper try-with-resources for file operations
-- **Java 21 features**: Uses `getFirst()` method for list access and modern switch expressions
+- **Java 25 features**: Uses `getFirst()` method for list access and modern switch expressions
 - **Method extraction**: Common string conversion logic extracted into reusable helper methods (`parametersToString()`, `annotationsToString()`, `parameterAnnotationsToString()`)
 - **Method filtering**: `isRegularMethod()` helper filters out constructors, static initializers, and lambda methods
 - **Comprehensive sorting**: All CSV outputs are sorted (classes by name, methods by name, fields by name, constructors by parameter count)

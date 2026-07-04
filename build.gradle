@@ -1,15 +1,15 @@
 plugins {
     id 'java-library'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.springframework.boot' version '4.0.5'
+    id 'org.springframework.boot' version '4.1.0'
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -26,7 +26,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.boot:spring-boot-dependencies:4.0.5'
+        mavenBom 'org.springframework.boot:spring-boot-dependencies:4.1.0'
     }
     dependencies {
         dependency 'io.github.classgraph:classgraph:4.8.184'
