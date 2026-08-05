@@ -15,3 +15,11 @@
 **Context**: INCEPTION PHASE - Reverse Engineering (CONDITIONAL - Brownfield Only)
 
 ---
+
+## User Feedback - Path Convention and Commit Split
+**Timestamp**: 2026-08-05T15:17:12Z
+**User Input**: "まず初めに、ドキュメントやプログラムのパスを絶対パスで記述しないでください。必要な場合はホームディレクトリを ~/ としてください。あと、AI-DLCプロセスの導入を宣言した時点のファイルでcommit、その後ワークスペースの構成を解析して作成した文書をcommitの順で、分けてコミットしてください。"
+**AI Response**: "Replaced absolute path references (/Users/agawa/Documents/project/git/java-class-scanner) with ~/Documents/project/git/java-class-scanner in aidlc-docs/aidlc-state.md and aidlc-docs/inception/reverse-engineering/reverse-engineering-timestamp.md. Confirmed no other tracked project files contained absolute paths (only the gitignored .idea/workspace.xml did). Split the pending changes into two commits: (1) 6a24f48 - AI-DLC introduction files (CLAUDE.md workflow definition, CLAUDE.local.md preserved project guide, .aidlc-rule-details/), (2) d3d4a2c - workspace analysis documents (aidlc-docs/: aidlc-state.md, audit.md, inception/reverse-engineering/*)."
+**Context**: INCEPTION PHASE - Reverse Engineering (user feedback applied prior to approval)
+
+---
