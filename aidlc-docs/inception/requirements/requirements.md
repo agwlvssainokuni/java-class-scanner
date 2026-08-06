@@ -49,6 +49,9 @@ JSON/YAML出力のキー名は英語camelCaseとする（例: `sourcePath`, `cla
 ### FR-7: 既存機能に対するテストの整備
 `Main`および`ClassScannerRunner`の現状の振る舞い全体（引数なし/`--quiet`時の挙動、終了コード、CSV/TSV出力のヘッダー・追記制御、`--package`フィルタ、`--charset`/`--format`の不正値フォールバック、`--verbose`出力）を対象に、テストを新規に整備する。FR-1〜FR-6で追加する新機能については、実装（Code Generation）と同時にテストも作成する（別タスクとしては扱わない）。
 
+### FR-8: コード内コメントの適宜追加
+新規実装・リファクタリング（DTO/抽出層/書式化層への分離、新規Writer等）にあたり、コードにコメントを適宜追加する。処理内容（WHAT）の説明ではなく、非自明な意図・制約・注意点（WHY）が読み取りにくい箇所（例: CSVとJSON/YAMLで挙動をあえて分けている理由、ヘッダー管理のキー設計、後方互換を切った経緯など）を対象とする。既存コード（`Main`, `ClassScannerRunner`）についても、リファクタリングで触れる範囲は同様の観点でコメントを見直す。
+
 ## Non-Functional Requirements
 
 ### NFR-1: 保守性・テスト容易性のためのリファクタリング
@@ -86,3 +89,4 @@ JSON/YAML出力のキー名は英語camelCaseとする（例: `sourcePath`, `cla
 3. Jackson（JSON/YAML用）とjqwik（PBT用）を新規依存として追加する。
 4. 既存機能全体を対象にテストを整備し、新機能は実装と同時にテストを作成する。JUnit 5 + AssertJ + jqwik（Partial PBT: PBT-02/03/07/08/09必須）を採用する。
 5. security-baseline / resiliency-baseline は適用しない。
+6. 新規実装・リファクタリング対象コードには、非自明な意図（WHY）が伝わりにくい箇所を中心にコメントを適宜追加する。

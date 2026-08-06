@@ -79,3 +79,11 @@
 **Context**: INCEPTION PHASE - Requirements Analysis (Step 7 Generate Requirements Document, Step 8 Update State Tracking)
 
 ---
+
+## Requirements Analysis - Add FR-8 (Code Comments)
+**Timestamp**: 2026-08-06T23:40:53Z
+**User Input**: "実施事項に一つ追加。適宜コメントも追加して欲しい。"
+**AI Response**: "Added FR-8 to requirements.md: add code comments where non-obvious intent (WHY) would otherwise be unclear (e.g. why CSV vs JSON/YAML behavior intentionally differs, header-tracking key design, rationale for dropping backward compatibility), applying to new code and to existing code touched during the refactor. Added a corresponding line to the Summary section (item 6)."
+**Context**: INCEPTION PHASE - Requirements Analysis (amendment to requirements.md, still awaiting user approval)
+
+---
