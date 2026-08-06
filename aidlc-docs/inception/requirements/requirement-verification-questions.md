@@ -84,7 +84,7 @@ B) 英語camelCaseキー名を使う（例: `"className": "..."`）。一般的�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ## Question 1 Follow-up F: 技術的負債解消（テスト実装）の進め方
 Q1では新機能追加（A）と技術的負債解消（B: テスト未実装の解消）の両方に取り組む方針でしたが、B側の具体的なテスト対象・範囲はまだ示されていません。どう進めますか？
@@ -95,7 +95,7 @@ B) 今回まとめてテスト実装（B）の詳細もこの場で提示する�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B（対象範囲は追ってユーザーから提示される）
 
 ## Question 2: Security Extensions
 Should security extension rules be enforced for this project?
