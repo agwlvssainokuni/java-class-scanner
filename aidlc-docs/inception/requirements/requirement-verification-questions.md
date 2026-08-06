@@ -15,7 +15,7 @@ D) まだ具体的なタスクは決まっていない（プロセス導入の�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A + B（新規追加・拡張、および技術的負債の解消の両方に取り組む。具体的な内容はこの後ユーザーから追って伝えられる）
 
 ## Question 2: Security Extensions
 Should security extension rules be enforced for this project?
@@ -26,7 +26,7 @@ B) No — skip all SECURITY rules (suitable for PoCs, prototypes, and experiment
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ## Question 3: Resiliency Extensions
 Should the resiliency baseline be applied to this project?
@@ -41,7 +41,7 @@ B) No — skip the resiliency baseline (suitable for PoCs, prototypes, and exper
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ## Question 4: Property-Based Testing Extension
 Should property-based testing (PBT) rules be enforced for this project?
@@ -54,4 +54,4 @@ C) No — skip all PBT rules (suitable for simple CRUD applications, UI-only pro
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B

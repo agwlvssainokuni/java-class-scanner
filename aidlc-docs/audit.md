@@ -31,3 +31,11 @@
 **Context**: INCEPTION PHASE - Reverse Engineering -> Requirements Analysis transition
 
 ---
+
+## Requirements Analysis - Extension Opt-In Answers
+**Timestamp**: 2026-08-06T23:12:55Z
+**User Input**: "Q1=A(このあと伝えます)+B, Q2=B, Q3=B, Q4=B"
+**AI Response**: "Recorded answers in requirement-verification-questions.md: Q1=A+B (new feature/extension AND resolving known technical debt, concrete task description to follow from user), Q2=B (security-baseline: No), Q3=B (resiliency-baseline: No), Q4=B (property-based-testing: Partial - PBT-02, PBT-03, PBT-07, PBT-08, PBT-09 enforced as blocking, remaining rules advisory). Loaded full rules file .aidlc-rule-details/extensions/testing/property-based/property-based-testing.md per Deferred Rule Loading (opted in as Partial). Updated aidlc-docs/aidlc-state.md Extension Configuration table. Q1's concrete task content is still pending from user before requirements.md can be generated (Step 7 prerequisite: gate must be passed with all answers received and analyzed)."
+**Context**: INCEPTION PHASE - Requirements Analysis (Step 5.1 Extension Opt-In + Step 6 Clarifying Questions, gate not yet fully passed)
+
+---

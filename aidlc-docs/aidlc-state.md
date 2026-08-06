@@ -19,9 +19,11 @@
 - **Structure patterns**: See code-generation.md Critical Rules
 
 ## Extension Configuration
-- **security-baseline**: Not yet decided (opt-in question pending at Requirements Analysis)
-- **resiliency-baseline**: Not yet decided (opt-in question pending at Requirements Analysis)
-- **property-based-testing**: Not yet decided (opt-in question pending at Requirements Analysis)
+| Extension | Enabled | Decided At |
+|---|---|---|
+| security-baseline | No | Requirements Analysis |
+| resiliency-baseline | No | Requirements Analysis |
+| property-based-testing | Partial (PBT-02, PBT-03, PBT-07, PBT-08, PBT-09 enforced; others advisory) | Requirements Analysis |
 
 ## Reverse Engineering Status
 - [x] Reverse Engineering - Completed on 2026-08-05T15:11:56Z
@@ -30,8 +32,7 @@
 ## Stage Progress
 - [x] INCEPTION - Workspace Detection
 - [x] INCEPTION - Reverse Engineering (approved by user 2026-08-05T23:14:17Z)
-- [ ] INCEPTION - Requirements Analysis (in progress - awaiting answers in aidlc-docs/inception/requirements/requirement-verification-questions.md)
-- [ ] INCEPTION - Requirements Analysis
+- [ ] INCEPTION - Requirements Analysis (in progress - extension opt-ins decided; awaiting concrete task description for Q1 A+B)
 - [ ] INCEPTION - User Stories (conditional)
 - [ ] INCEPTION - Workflow Planning
 - [ ] INCEPTION - Application Design (conditional)
