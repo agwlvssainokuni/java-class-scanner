@@ -42,8 +42,8 @@
 - [x] Reverse Engineering (approved by user 2026-08-05T23:14:17Z)
 - [x] Requirements Analysis (approved by user, FR-8 added 2026-08-06T23:40:53Z)
 - [x] User Stories - SKIP (rationale in execution-plan.md)
-- [x] Workflow Planning (execution-plan.md generated, awaiting user approval)
-- [ ] Application Design - EXECUTE (next stage)
+- [x] Workflow Planning (approved by user 2026-08-06T23:46:48Z)
+- [ ] Application Design - EXECUTE (in progress - application-design-plan.md created, awaiting user answers)
 - [ ] Units Generation - SKIP (rationale in execution-plan.md)
 
 ### CONSTRUCTION PHASE (Per-Unit Loop - 1 unit: java-class-scanner本体)
@@ -59,6 +59,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: INCEPTION
-- **Current Stage**: Workflow Planning Complete
-- **Next Stage**: Application Design
-- **Status**: Awaiting user approval of execution-plan.md
+- **Current Stage**: Application Design (Planning)
+- **Next Stage**: Application Design (Generation) once questions answered
+- **Status**: Awaiting user answers in aidlc-docs/inception/plans/application-design-plan.md
