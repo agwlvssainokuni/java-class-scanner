@@ -43,7 +43,7 @@
 - [x] Requirements Analysis (approved by user, FR-8 added 2026-08-06T23:40:53Z)
 - [x] User Stories - SKIP (rationale in execution-plan.md)
 - [x] Workflow Planning (approved by user 2026-08-06T23:46:48Z)
-- [ ] Application Design - EXECUTE (in progress - application-design-plan.md created, awaiting user answers)
+- [x] Application Design (artifacts generated, awaiting user approval)
 - [ ] Units Generation - SKIP (rationale in execution-plan.md)
 
 ### CONSTRUCTION PHASE (Per-Unit Loop - 1 unit: java-class-scanner本体)
@@ -59,6 +59,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: INCEPTION
-- **Current Stage**: Application Design (Planning)
-- **Next Stage**: Application Design (Generation) once questions answered
-- **Status**: Awaiting user answers in aidlc-docs/inception/plans/application-design-plan.md
+- **Current Stage**: Application Design (Generation Complete)
+- **Next Stage**: CONSTRUCTION PHASE - Functional Design (per execution-plan.md)
+- **Status**: Awaiting user approval of aidlc-docs/inception/application-design/

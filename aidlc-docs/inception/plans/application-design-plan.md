@@ -5,18 +5,18 @@
 
 ## Plan
 
-- [ ] コンポーネント識別・パッケージ構成を決定する
-- [ ] DTO（レコード型）のフィールド構成を決定する
-- [ ] 抽出層コンポーネントのメソッドシグネチャを決定する
-- [ ] 書式化層（Writer）のインターフェース・実装方針を決定する
-- [ ] サービス層（`ClassScannerRunner`のオーケストレーション方式）を決定する
-- [ ] コンポーネント間依存関係を決定する
-- [ ] 上記に基づき、以下の成果物を生成する:
-  - [ ] `aidlc-docs/inception/application-design/components.md`
-  - [ ] `aidlc-docs/inception/application-design/component-methods.md`
-  - [ ] `aidlc-docs/inception/application-design/services.md`
-  - [ ] `aidlc-docs/inception/application-design/component-dependency.md`
-  - [ ] `aidlc-docs/inception/application-design/application-design.md`（上記4件の統合ドキュメント）
+- [x] コンポーネント識別・パッケージ構成を決定する
+- [x] DTO（レコード型）のフィールド構成を決定する
+- [x] 抽出層コンポーネントのメソッドシグネチャを決定する
+- [x] 書式化層（Writer）のインターフェース・実装方針を決定する
+- [x] サービス層（`ClassScannerRunner`のオーケストレーション方式）を決定する
+- [x] コンポーネント間依存関係を決定する
+- [x] 上記に基づき、以下の成果物を生成する:
+  - [x] `aidlc-docs/inception/application-design/components.md`
+  - [x] `aidlc-docs/inception/application-design/component-methods.md`
+  - [x] `aidlc-docs/inception/application-design/services.md`
+  - [x] `aidlc-docs/inception/application-design/component-dependency.md`
+  - [x] `aidlc-docs/inception/application-design/application-design.md`（上記4件の統合ドキュメント）
 
 ## Clarifying Questions
 
@@ -33,7 +33,7 @@ C) その他の構成（[Answer]: の後に具体的に記述してください�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ### Question 2: DTOの実装方式
 `ClassRecord`, `MethodRecord`, `FieldRecord`, `ConstructorRecord`はどう実装しますか？
@@ -44,7 +44,7 @@ B) 通常のクラス（getter付き）として実装する
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ### Question 3: JSON/YAML出力における複数入力ファイルの集約方式
 現行のCSV/TSVは、複数のJAR/ディレクトリを引数指定した場合、1ファイルに追記集約されます（初回のみヘッダー出力）。JSON/YAMLは構造化ドキュメントであり、テキスト追記という概念がそのまま適用できません。どう集約しますか？
@@ -57,7 +57,7 @@ C) JSON/YAML出力では複数入力の集約をサポートしない（複数�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ### Question 4: 書式化層（Writer）のインターフェース設計
 CSV/TSV/JSON/YAMLの各Writerをどう抽象化しますか？
@@ -68,7 +68,7 @@ B) 単一の汎用Writerクラス内に、フォーマットごとの分岐ロ�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ### Question 5: サービス層（オーケストレーション）の責務
 `ClassScannerRunner`は最終的にどこまでの責務を持ちますか？
@@ -79,4 +79,4 @@ B) 現状同様、`ClassScannerRunner`にある程度のロジックを残し、
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
