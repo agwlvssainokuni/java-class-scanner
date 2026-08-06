@@ -71,3 +71,11 @@
 **Context**: INCEPTION PHASE - Requirements Analysis (Step 6 Follow-up Questions, gate still open pending F's test scope detail)
 
 ---
+
+## Requirements Analysis - Refactoring Decision and Requirements.md Generation
+**Timestamp**: 2026-08-06T23:39:01Z
+**User Input**: "基本的に全機能を対象としたいが、AIからの提案があれば聞かせてほしい。" then, after AI proposed a test framework/scope plan and separately raised whether to refactor ClassScannerRunner into extraction/formatting layers for testability given the growing output-type x format combinations, the user replied "OK" to the refactoring proposal.
+**AI Response**: "Recorded the finalized Follow-up F scope (test framework: JUnit5+AssertJ+jqwik; existing functionality fully covered as backfill, new Q1-A features tested alongside their implementation; PBT-10 separation; PBT candidates) and the agreed refactoring decision (split ClassScannerRunner into an extraction layer producing DTOs and a formatting/writer layer per CSV/TSV/JSON/YAML, to be detailed in a later Application Design stage) into requirement-verification-questions.md. All Step 6 questions (Q1 + Follow-up A-F, Q2-Q4) now answered - gate passed. Generated aidlc-docs/inception/requirements/requirements.md with FR-1..FR-7 and NFR-1..NFR-4 covering: classes-output, JSON/YAML formats, array-vs-delimiter output, camelCase JSON/YAML keys, CLI option renaming (clean break, no back-compat), verbose output additions, test backfill for existing functionality, the extraction/formatting refactor, new Jackson/jqwik dependencies, and the security-baseline/resiliency-baseline opt-out. Updated aidlc-state.md marking Requirements Analysis complete pending user approval."
+**Context**: INCEPTION PHASE - Requirements Analysis (Step 7 Generate Requirements Document, Step 8 Update State Tracking)
+
+---

@@ -97,6 +97,16 @@ X) Other (please describe after [Answer]: tag below)
 
 [Answer]: B（対象範囲は追ってユーザーから提示される）
 
+### Question 1 Follow-up F 補足: テスト範囲とリファクタリング方針（確定）
+
+- **テスト対象範囲**: 基本的に全機能を対象とする（ユーザー指定）。
+- **AI提案（合意済み）**:
+  - テストフレームワーク: JUnit 5（既存） + AssertJ（既存の`spring-boot-starter-test`経由） + jqwik（PBT用に新規追加）。
+  - 対象範囲の切り分け: 既存機能（`Main`, `ClassScannerRunner`の現状の振る舞い全体）をQ1-Bのテスト未整備解消として全面カバーする。Q1-Aで新規追加する機能（classes-output, JSON/YAML出力, camelCaseキー, verboseの修飾子/クラスアノテーション追加）は、実装（Code Generation）と同時にテストも生成する。
+  - PBT-10に従いExample-basedテストとPBTをクラス/メソッド名で明確に分離する。
+  - PBT候補: ソート順不変条件、パッケージフィルタの不変条件、CSV列構成（先頭列=ソースパス）の不変条件。
+- **設計判断（ユーザー合意済み）**: 機能増加（4出力種別 × 複数フォーマット）とテスト容易性の両方の観点から、`ClassScannerRunner`を「抽出（ClassGraph情報→DTO）」と「書式化（DTO→CSV/TSV/JSON/YAML）」に分離するリファクタリングを、Q1-A実装前に行う。これにより要件(3)（JSON/YAMLはarray、CSVはデリミタ結合)をDTO層で自然に実現する。この設計判断はAI-DLCワークフロー上、後続の **Application Design** ステージ（Workflow Planningでの実行判定を経て）で正式に詳細化する。
+
 ## Question 2: Security Extensions
 Should security extension rules be enforced for this project?
 
