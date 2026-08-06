@@ -39,3 +39,27 @@
 **Context**: INCEPTION PHASE - Requirements Analysis (Step 5.1 Extension Opt-In + Step 6 Clarifying Questions, gate not yet fully passed)
 
 ---
+
+## Requirements Analysis - Q1 Elaboration (New Feature/Extension Details)
+**Timestamp**: 2026-08-06T23:19:31Z
+**User Input**: "Q1のAについて。(1)クラスの一覧もファイル出力する。(2)出力フォーマットとしてJSON, YAMLを追加。(3)JSON, YAML出力では値が複数ある項目をarrayとして出力する(CSVはこれまで通りデリミタで区切って1カラムとして出力)。コマンドラインオプションの名前が\"*-csv\"なのが実態と合わなくなるので変えたい。提案して欲しい。"
+**AI Response**: "Recorded the three concrete requirements as a Q1 sub-section in requirement-verification-questions.md: (1) add classes-list file export, (2) add JSON/YAML output formats, (3) JSON/YAML render multi-value fields as arrays while CSV/TSV keep delimiter-joined single-column behavior unchanged. Proposed CLI option renaming in chat: --methods-csv/--fields-csv/--constructors-csv -> --methods-output/--fields-output/--constructors-output, plus new --classes-output, decoupling option names from --format. Verified via ./gradlew dependencies that Jackson is NOT currently a dependency (only transitive SnakeYAML 2.6 exists via Spring Boot). Identified 4 remaining ambiguities requiring user decision and added them as 'Question 1 Follow-up A-D' in the question file: (A) CLI naming convention choice, (B) whether to keep old *-csv option names for backward compatibility or clean-replace them, (C) which fields to include in the new classes-output, (D) which JSON/YAML library to add (recommended Jackson databind + jackson-dataformat-yaml). Did not yet generate requirements.md - Step 6 gate still open pending these answers."
+**Context**: INCEPTION PHASE - Requirements Analysis (Step 5 Completeness Analysis + Step 6 Follow-up Questions)
+
+---
+
+## Requirements Analysis - Naming Correction (Q1 numbering)
+**Timestamp**: 2026-08-06T23:22:00Z
+**User Input**: "回答する前に訂正。コマンドラインオプションは(4)とすべきだった。"
+**AI Response**: "Confirmed requirement-verification-questions.md already recorded the CLI option renaming request as item 4 in the Q1 supplement list; only my chat summary text had understated it as '(1)〜(3)'. No file change needed."
+**Context**: INCEPTION PHASE - Requirements Analysis (correction of AI's chat summary, not the recorded artifact)
+
+---
+
+## Requirements Analysis - Follow-up A-D Answers + New Requirement
+**Timestamp**: 2026-08-06T23:25:08Z
+**User Input**: "A=A, B=A, C=B+修飾子(public, finalなど)+クラスアノテーション, D=A. Cに関連して、verbose出力にも修飾子とクラスアノテーションを追加したい。"
+**AI Response**: "Recorded answers in requirement-verification-questions.md: Follow-up A=A (--<type>-output naming), Follow-up B=A (clean removal of old *-csv option names, no deprecation period), Follow-up C=B+modifiers+class annotations (classes-output includes verbose-equivalent fields plus modifiers and class-level annotations), Follow-up D=A (add Jackson databind + jackson-dataformat-yaml as new dependencies). Captured the related new requirement that printVerboseClassInfo's console --verbose output should also gain modifiers and class annotations lines (currently missing). Identified two more open decisions needed before requirements.md can be generated and added them as Follow-up E (JSON/YAML key naming: Japanese vs English camelCase, recommended English camelCase) and Follow-up F (whether to scope this Requirements Analysis to the new-feature work only and defer the Q1-B test-debt work to a separate future unit, or detail test scope now)."
+**Context**: INCEPTION PHASE - Requirements Analysis (Step 5 Completeness Analysis + Step 6 Follow-up Questions, gate still open)
+
+---
