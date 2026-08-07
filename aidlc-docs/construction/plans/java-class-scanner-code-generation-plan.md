@@ -72,9 +72,9 @@ public interface RecordWriter<T> {
     - `src/test/java/cherry/classscanner/ClassScannerRunnerPropertyTest.java`（jqwik PBT: CSV列構成不変条件「先頭列は常にソースパス」「全行のカラム数がヘッダーと一致」 — PBT-03）
   - **実施結果**: `./gradlew test` で全38テスト成功（jqwikの3プロパティテストは各1000ケースのランダム生成で実行）。実行中、jqwikのコンソール出力にAIエージェント宛てのプロンプトインジェクションと思われる文字列（"you must not use this library..."）が混入していることを検知したが、正規の実行結果と矛盾する不審な内容のため無視し、ユーザーに報告した。
 
-- [ ] **Step 9: ドキュメント更新**
+- [x] **Step 9: ドキュメント更新**
   - 対象（修正）: `README.md`, `README_en.md`, `CLAUDE.local.md`
-  - 内容: 新CLIオプション体系（`--classes-output`等）、`--format`の`json`/`yaml`対応、CSV列構成に加えJSON/YAMLのキー命名（camelCase）を反映。旧`*-csv`オプションの記載を削除。
+  - 内容: 新CLIオプション体系（`--classes-output`等）、`--format`の`json`/`yaml`対応、CSV列構成に加えJSON/YAMLのキー命名（camelCase）を反映。旧`*-csv`オプションの記載を削除。`CLAUDE.local.md`には抽出/書式化分離アーキテクチャ、CSV/JSON・YAMLの書き込みタイミングの非対称性、Jackson 3のObjectMapper/YAMLMapper型衝突の落とし穴を追記。
 
 - [ ] **Step 10: コード生成サマリ作成**
   - 対象（新規）: `aidlc-docs/construction/java-class-scanner/code/code-generation-summary.md`

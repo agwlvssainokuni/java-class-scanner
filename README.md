@@ -5,13 +5,13 @@ Java Class Scannerは、JARファイルやディレクトリ内のJavaクラス�
 ## 機能
 
 - JARファイルやディレクトリ内のJavaクラスの詳細情報を取得
-- メソッド、フィールド、コンストラクタ情報のCSV/TSV出力
-- アノテーション情報の抽出・出力対応（メソッド、フィールド、コンストラクタ、引数アノテーション）
+- クラス、メソッド、フィールド、コンストラクタ情報のCSV/TSV/JSON/YAML出力
+- アノテーション情報の抽出・出力対応（クラス、メソッド、フィールド、コンストラクタ、引数アノテーション）
 - 複数ファイルスキャン時の結果集約（ソースパス追跡付き）
 - アルファベット順・引数数順でのソート済み出力
 - パッケージ名による絞り込み機能
 - 複数の文字エンコーディング対応
-- 詳細表示モード
+- 詳細表示モード（クラスの修飾子・アノテーションも表示）
 
 ## 必要な環境
 
@@ -43,11 +43,12 @@ java -jar build/libs/java-class-scanner-*.jar <file|directory>...
 |-----------|------|
 | `--verbose` | クラスの詳細情報を表示 |
 | `--package=<package>` | 指定したパッケージ名でフィルタリング |
-| `--methods-csv=<file>` | メソッド情報をCSVファイルに出力 |
-| `--fields-csv=<file>` | フィールド情報をCSVファイルに出力 |
-| `--constructors-csv=<file>` | コンストラクタ情報をCSVファイルに出力 |
-| `--format=<format>` | 出力形式 (csv または tsv、デフォルト: csv) |
-| `--charset=<charset>` | CSVファイルの文字エンコーディング (デフォルト: UTF-8) |
+| `--classes-output=<file>` | クラス一覧をファイルに出力 |
+| `--methods-output=<file>` | メソッド情報をファイルに出力 |
+| `--fields-output=<file>` | フィールド情報をファイルに出力 |
+| `--constructors-output=<file>` | コンストラクタ情報をファイルに出力 |
+| `--format=<format>` | 出力形式 (csv, tsv, json, yaml のいずれか。デフォルト: csv) |
+| `--charset=<charset>` | 出力ファイルの文字エンコーディング (デフォルト: UTF-8) |
 | `--quiet` | 標準出力を抑制 |
 
 ### 使用例
@@ -69,15 +70,16 @@ java -jar java-class-scanner.jar --package=com.example myapp.jar
 
 4. メソッド情報をCSVファイルに出力：
 ```bash
-java -jar java-class-scanner.jar --methods-csv=methods.csv myapp.jar
+java -jar java-class-scanner.jar --methods-output=methods.csv myapp.jar
 ```
 
 5. 複数の出力オプションを組み合わせ：
 ```bash
 java -jar java-class-scanner.jar \
-  --methods-csv=methods.csv \
-  --fields-csv=fields.csv \
-  --constructors-csv=constructors.csv \
+  --classes-output=classes.tsv \
+  --methods-output=methods.tsv \
+  --fields-output=fields.tsv \
+  --constructors-output=constructors.tsv \
   --format=tsv \
   --charset=Shift_JIS \
   myapp.jar
@@ -90,51 +92,86 @@ java -jar java-class-scanner.jar /path/to/classes
 
 7. 複数のJARファイルを一括解析してCSVに集約：
 ```bash
-java -jar java-class-scanner.jar --methods-csv=all-methods.csv app1.jar app2.jar lib.jar
+java -jar java-class-scanner.jar --methods-output=all-methods.csv app1.jar app2.jar lib.jar
 ```
 
-## CSV出力形式
+8. JSON形式でクラス一覧とメソッド情報を出力：
+```bash
+java -jar java-class-scanner.jar \
+  --classes-output=classes.json \
+  --methods-output=methods.json \
+  --format=json \
+  myapp.jar
+```
+
+9. YAML形式で出力：
+```bash
+java -jar java-class-scanner.jar --methods-output=methods.yaml --format=yaml myapp.jar
+```
+
+## 出力形式
+
+CSV/TSV出力の列構成（日本語ヘッダー）と、JSON/YAML出力のキー構成（英語camelCase）は対応しています。
+複数値を持つ項目（実装インターフェース、引数、各種アノテーション等）は、CSV/TSVではデリミタ区切りの
+1カラムとして出力されますが、JSON/YAMLではネイティブな配列（引数ごとのアノテーションは配列の配列）
+として出力されます。値が存在しない項目（クラスの親クラス等）は、CSV/TSVでは空文字列、JSON/YAMLでは
+明示的な`null`として表現されます。
+
+### クラス情報 (classes.csv)
+| カラム (CSV) | キー (JSON/YAML) | 説明 |
+|--------|--------|------|
+| ソースパス | sourcePath | スキャン対象のファイル/ディレクトリパス |
+| クラス名 | className | フルクラス名 |
+| 型 | type | Class / Interface / Abstract Class / Enum / Annotation |
+| 親クラス | superclass | 親クラス名（存在しない場合は空/null） |
+| 実装インターフェース | interfaces | 実装しているインターフェース |
+| パッケージ | packageName | パッケージ名 |
+| 修飾子 | modifiers | アクセス修飾子等 |
+| クラスアノテーション | classAnnotations | クラスに付与されたアノテーション |
 
 ### メソッド情報 (methods.csv)
-| カラム | 説明 |
-|--------|------|
-| ソースパス | スキャン対象のファイル/ディレクトリパス |
-| クラス名 | フルクラス名 |
-| メソッド名 | メソッド名 |
-| 返却値 | 戻り値の型 |
-| 引数 | 引数の型リスト |
-| 修飾子 | アクセス修飾子等 |
-| IsStatic | static メソッドかどうか |
-| メソッドアノテーション | メソッドに付与されたアノテーション |
-| 引数アノテーション | 各引数に付与されたアノテーション |
+| カラム (CSV) | キー (JSON/YAML) | 説明 |
+|--------|--------|------|
+| ソースパス | sourcePath | スキャン対象のファイル/ディレクトリパス |
+| クラス名 | className | フルクラス名 |
+| メソッド名 | methodName | メソッド名 |
+| 返却値 | returnType | 戻り値の型 |
+| 引数 | parameters | 引数の型リスト |
+| 修飾子 | modifiers | アクセス修飾子等 |
+| IsStatic | isStatic | static メソッドかどうか |
+| メソッドアノテーション | methodAnnotations | メソッドに付与されたアノテーション |
+| 引数アノテーション | parameterAnnotations | 各引数に付与されたアノテーション |
 
 ### フィールド情報 (fields.csv)
-| カラム | 説明 |
-|--------|------|
-| ソースパス | スキャン対象のファイル/ディレクトリパス |
-| クラス名 | フルクラス名 |
-| フィールド名 | フィールド名 |
-| フィールド型 | フィールドの型 |
-| 修飾子 | アクセス修飾子等 |
-| IsStatic | static フィールドかどうか |
-| フィールドアノテーション | フィールドに付与されたアノテーション |
+| カラム (CSV) | キー (JSON/YAML) | 説明 |
+|--------|--------|------|
+| ソースパス | sourcePath | スキャン対象のファイル/ディレクトリパス |
+| クラス名 | className | フルクラス名 |
+| フィールド名 | fieldName | フィールド名 |
+| フィールド型 | fieldType | フィールドの型 |
+| 修飾子 | modifiers | アクセス修飾子等 |
+| IsStatic | isStatic | static フィールドかどうか |
+| フィールドアノテーション | fieldAnnotations | フィールドに付与されたアノテーション |
 
 ### コンストラクタ情報 (constructors.csv)
-| カラム | 説明 |
-|--------|------|
-| ソースパス | スキャン対象のファイル/ディレクトリパス |
-| クラス名 | フルクラス名 |
-| 引数 | 引数の型リスト |
-| 修飾子 | アクセス修飾子等 |
-| コンストラクタアノテーション | コンストラクタに付与されたアノテーション |
-| 引数アノテーション | 各引数に付与されたアノテーション |
+| カラム (CSV) | キー (JSON/YAML) | 説明 |
+|--------|--------|------|
+| ソースパス | sourcePath | スキャン対象のファイル/ディレクトリパス |
+| クラス名 | className | フルクラス名 |
+| 引数 | parameters | 引数の型リスト |
+| 修飾子 | modifiers | アクセス修飾子等 |
+| コンストラクタアノテーション | constructorAnnotations | コンストラクタに付与されたアノテーション |
+| 引数アノテーション | parameterAnnotations | 各引数に付与されたアノテーション |
 
 ### 注記
-- 複数ファイル・ディレクトリを指定した場合、すべての結果が1つのCSVファイルに集約されます
-- ソースパス列により、各クラスがどのファイル/ディレクトリから抽出されたかを追跡できます
+- 複数ファイル・ディレクトリを指定した場合、すべての結果が1つの出力ファイルに集約されます
+  - CSV/TSVは対象ファイルごとに逐次追記されます（初回のみヘッダー出力）
+  - JSON/YAMLは全対象の処理完了後、フラットな1つの配列/シーケンスとしてまとめて出力されます
+- ソースパス列（キー）により、各クラスがどのファイル/ディレクトリから抽出されたかを追跡できます
 - アノテーション情報には完全修飾クラス名が含まれます
 - 出力は自動的にソートされます（クラス名、メソッド名、フィールド名：アルファベット順、コンストラクタ：引数数順）
 - 内部メソッド（`<init>`, `<clinit>`, ラムダメソッド）は出力から除外されます
+- 該当データが0件でも出力ファイルは生成されます（CSV/TSVはヘッダーのみ、JSON/YAMLは空配列/空シーケンス）
 
 ## 開発
 
@@ -154,13 +191,16 @@ java -jar java-class-scanner.jar --methods-csv=all-methods.csv app1.jar app2.jar
 - **Java バージョン**: Java 25
 - **主要ライブラリ**:
   - ClassGraph 4.8.184 (クラス解析)
-  - Apache Commons CSV 1.14.1 (CSV出力)
+  - Apache Commons CSV 1.14.1 (CSV/TSV出力)
+  - Jackson 3系 (`tools.jackson`, JSON/YAML出力)
   - Apache Commons Lang3 (ユーティリティ)
+  - jqwik 1.10.1 (Property-Based Testing、テストのみ)
 
 ### アーキテクチャの特徴
-- **モダンJava機能**: Java 25の`toList()`、メソッド参照、switch式を活用
-- **コード品質**: DRY原則に基づくヘルパーメソッド抽出
-- **CSV出力最適化**: ヘッダー管理とappendモードによる効率的なファイル処理
+- **モダンJava機能**: Java 25の`toList()`、record型、メソッド参照、switch式を活用
+- **抽出/書式化の分離**: ClassGraph情報をDTO（record）へ変換する抽出層と、DTOをCSV/TSV/JSON/YAMLへ変換する書式化層(Strategyパターン)を分離
+- **Spring DIベースの構成**: 各コンポーネントをSpring管理Beanとしてコンストラクタインジェクションで組み立て
+- **CSV/TSV出力最適化**: ヘッダー管理とappendモードによる効率的な逐次ファイル処理
 - **包括的ソート**: 全出力の一貫したソート処理
 
 ## ライセンス

@@ -51,7 +51,7 @@
 - [x] NFR Requirements (artifacts generated, awaiting user approval)
 - [x] NFR Design (artifacts generated, awaiting user approval)
 - [ ] Infrastructure Design - SKIP
-- [ ] Code Generation - EXECUTE (Part 2 in progress - Steps 1-8/10 complete: source + tests; all 38 tests pass including 3 jqwik property tests)
+- [ ] Code Generation - EXECUTE (Part 2 in progress - Steps 1-9/10 complete: source, tests, docs; ./gradlew build green)
 - [ ] Build and Test - EXECUTE
 
 ### OPERATIONS PHASE
