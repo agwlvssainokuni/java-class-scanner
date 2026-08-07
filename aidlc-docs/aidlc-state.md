@@ -51,7 +51,7 @@
 - [x] NFR Requirements (artifacts generated, awaiting user approval)
 - [x] NFR Design (artifacts generated, awaiting user approval)
 - [ ] Infrastructure Design - SKIP
-- [ ] Code Generation - EXECUTE (Part 1 Planning complete, awaiting user approval of plan)
+- [ ] Code Generation - EXECUTE (Part 2 in progress - Steps 1-6/10 complete: build.gradle, model, extract, output, config, ClassScannerRunner; manually smoke-tested)
 - [ ] Build and Test - EXECUTE
 
 ### OPERATIONS PHASE
