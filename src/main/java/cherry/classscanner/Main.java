@@ -19,6 +19,12 @@ package cherry.classscanner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * {@code doMain}はコンテキストをtry-with-resourcesでクローズしたうえで
+ * {@link SpringApplication#exit}を呼び出す。これはApplicationContextが保持する
+ * {@link org.springframework.boot.ExitCodeGenerator}Bean(本アプリでは{@link ClassScannerRunner})の
+ * 終了コードを、コンテキストクローズ後も正しくOSへ伝播させるためのSpring Bootの標準的なCLIパターン。
+ */
 @SpringBootApplication
 public class Main {
 

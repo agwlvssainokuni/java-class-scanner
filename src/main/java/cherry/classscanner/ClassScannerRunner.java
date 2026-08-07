@@ -257,6 +257,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         }
     }
 
+    // csvRecordWriter/jsonRecordWriter/yamlRecordWriterはSpring DIによりワイルドカード型(RecordWriter<?>)
+    // で保持されているため、呼び出し時にXへキャストする必要がある。全ての呼び出し元がrecords/typeと
+    // 同じXをwriterに渡す規約を守っている限り安全(コンパイラは規約を検証できないためunchecked警告が出る)。
     @SuppressWarnings("unchecked")
     private <X> void writeRecords(
             RecordWriter<?> writer,

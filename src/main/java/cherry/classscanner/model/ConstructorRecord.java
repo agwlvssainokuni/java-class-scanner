@@ -18,6 +18,10 @@ package cherry.classscanner.model;
 
 import java.util.List;
 
+/**
+ * parameterAnnotationsはparametersと同じ並び順・同じ要素数を持ち、
+ * 各要素はその引数に付与されたアノテーション名のリスト(0件の場合は空リスト)。
+ */
 public record ConstructorRecord(
         String sourcePath,
         String className,
