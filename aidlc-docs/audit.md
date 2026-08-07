@@ -175,3 +175,19 @@
 **Context**: CONSTRUCTION PHASE - NFR Requirements (Steps 5-9, unit: java-class-scanner)
 
 ---
+
+## NFR Requirements - Approval
+**Timestamp**: 2026-08-07T00:14:03Z
+**User Input**: "承認します。NFR Designへ進んでください。"
+**AI Response**: "Approval recorded. Proceeding to NFR Design per .aidlc-rule-details/construction/nfr-design.md, unit: java-class-scanner."
+**Context**: CONSTRUCTION PHASE - NFR Requirements -> NFR Design transition
+
+---
+
+## NFR Design - Plan Created (unit: java-class-scanner)
+**Timestamp**: 2026-08-07T00:15:09Z
+**User Input**: (continuation of the above approval - no separate input during this stage)
+**AI Response**: "Created aidlc-docs/construction/plans/java-class-scanner-nfr-design-plan.md. Marked Resilience/Scalability/Performance/Security patterns as N/A with rationale (no new NFRs beyond what NFR Requirements already settled). Raised 2 questions on the one real design area (Logical Components: how Jackson mappers get incorporated): (1) whether JsonRecordWriter/YamlRecordWriter should hold a shared static final ObjectMapper/YAMLMapper instance vs create one per call (recommended shared, since Jackson mappers are thread-safe and costly to construct), (2) whether JSON output should be pretty-printed/indented or compact (recommended indented for readability and visual consistency with YAML)."
+**Context**: CONSTRUCTION PHASE - NFR Design (Steps 2-4, unit: java-class-scanner)
+
+---
