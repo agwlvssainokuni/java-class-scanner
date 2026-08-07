@@ -130,7 +130,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         try {
             for (String filePath : files) {
-                processFile(filePath, args, aggregation);
+                aggregation = aggregation.merge(processFile(filePath, args));
             }
         } finally {
             // BR-12: 途中でエラーが発生しても、それまでに蓄積されたレコードをベストエフォートで書き出す
@@ -150,10 +150,10 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 .toList();
     }
 
-    private void processFile(
+    @Nonnull
+    private Aggregation processFile(
             @Nonnull String filePath,
-            @Nonnull ApplicationArguments args,
-            @Nonnull Aggregation aggregation
+            @Nonnull ApplicationArguments args
     ) {
         var quiet = args.containsOption("quiet");
         var isDirectory = Files.isDirectory(Paths.get(filePath));
@@ -176,7 +176,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 if (!quiet) {
                     logger.info("No classes found in {}.", (isDirectory ? "directory" : "file"));
                 }
-                return;
+                return Aggregation.empty();
             }
 
             var packageFilter = args.containsOption("package") ?
@@ -187,18 +187,14 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 logger.info("Found {} classes:", filteredClasses.size());
             }
 
-            if (args.containsOption("classes-output")) {
-                aggregation.classes().addAll(recordExtractor.extractClasses(filePath, filteredClasses));
-            }
-            if (args.containsOption("methods-output")) {
-                aggregation.methods().addAll(recordExtractor.extractMethods(filePath, filteredClasses));
-            }
-            if (args.containsOption("fields-output")) {
-                aggregation.fields().addAll(recordExtractor.extractFields(filePath, filteredClasses));
-            }
-            if (args.containsOption("constructors-output")) {
-                aggregation.constructors().addAll(recordExtractor.extractConstructors(filePath, filteredClasses));
-            }
+            var classes = args.containsOption("classes-output") ?
+                    recordExtractor.extractClasses(filePath, filteredClasses) : List.<ClassRecord>of();
+            var methods = args.containsOption("methods-output") ?
+                    recordExtractor.extractMethods(filePath, filteredClasses) : List.<MethodRecord>of();
+            var fields = args.containsOption("fields-output") ?
+                    recordExtractor.extractFields(filePath, filteredClasses) : List.<FieldRecord>of();
+            var constructors = args.containsOption("constructors-output") ?
+                    recordExtractor.extractConstructors(filePath, filteredClasses) : List.<ConstructorRecord>of();
 
             // Standard output
             if (!quiet) {
@@ -211,6 +207,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                     }
                 });
             }
+
+            return new Aggregation(classes, methods, fields, constructors);
         }
     }
 
@@ -382,7 +380,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     }
 
     /**
-     * 全フォーマット共通で、全入力を横断して蓄積するレコードの保持先(BR-8/BR-9)。
+     * 1ファイル分、または全入力を横断して蓄積したレコードの集合(BR-8/BR-9)を表す不変な値オブジェクト。
+     * {@code processFile}が1ファイル分の結果をこの型で返し、呼び出し元({@code processJarFiles}）が
+     * {@link #merge}で積み上げる(副作用による集約ではなく、返却値の合成として表現する)。
      */
     private record Aggregation(
             @Nonnull List<ClassRecord> classes,
@@ -392,7 +392,31 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     ) {
         @Nonnull
         static Aggregation empty() {
-            return new Aggregation(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            return new Aggregation(List.of(), List.of(), List.of(), List.of());
+        }
+
+        @Nonnull
+        Aggregation merge(@Nonnull Aggregation other) {
+            return new Aggregation(
+                    concat(classes, other.classes),
+                    concat(methods, other.methods),
+                    concat(fields, other.fields),
+                    concat(constructors, other.constructors)
+            );
+        }
+
+        @Nonnull
+        private static <X> List<X> concat(@Nonnull List<X> a, @Nonnull List<X> b) {
+            if (a.isEmpty()) {
+                return b;
+            }
+            if (b.isEmpty()) {
+                return a;
+            }
+            var combined = new ArrayList<X>(a.size() + b.size());
+            combined.addAll(a);
+            combined.addAll(b);
+            return combined;
         }
     }
 }
