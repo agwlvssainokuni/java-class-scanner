@@ -164,9 +164,7 @@ as an empty string in CSV/TSV, and as an explicit `null` in JSON/YAML.
 | 引数アノテーション | parameterAnnotations | Annotations applied to each parameter |
 
 ### Notes
-- When multiple files/directories are specified, all results are aggregated into a single output file
-  - CSV/TSV is appended incrementally per input file (header written only on the first write)
-  - JSON/YAML is written once, after all inputs are processed, as one flat array/sequence
+- When multiple files/directories are specified, all results are aggregated into a single output file (regardless of format, written once as a whole after all inputs are processed)
 - The source path column/key allows tracking which file/directory each class was extracted from
 - Annotation information includes fully qualified class names
 - Output is automatically sorted (class names, method names, field names: alphabetical order, constructors: parameter count order)
@@ -200,7 +198,7 @@ as an empty string in CSV/TSV, and as an explicit `null` in JSON/YAML.
 - **Modern Java Features**: Utilizes Java 25's `toList()`, record types, method references, and switch expressions
 - **Extraction/Formatting Separation**: An extraction layer converts ClassGraph data into DTOs (records), and a formatting layer (Strategy pattern) converts DTOs into CSV/TSV/JSON/YAML
 - **Spring DI-based Composition**: Components are assembled as Spring-managed beans via constructor injection
-- **CSV/TSV Output Optimization**: Efficient incremental file processing with header management and append mode
+- **Aggregate Write**: All formats write once, after all inputs are fully processed
 - **Comprehensive Sorting**: Consistent sorting across all outputs
 
 ## License

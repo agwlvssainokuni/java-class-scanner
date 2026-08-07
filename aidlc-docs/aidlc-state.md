@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-05T15:08:58Z
-- **Current Stage**: INCEPTION - Workflow Planning (Complete, awaiting user approval)
+- **Current Stage**: CONSTRUCTION - Code Generation (Part 2 complete incl. post-approval simplification, unit: java-class-scanner)
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -59,6 +59,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: Code Generation (Part 1 - Planning) - unit: java-class-scanner
-- **Next Stage**: Code Generation (Part 2 - Generation) once plan approved
-- **Status**: Awaiting user approval of aidlc-docs/construction/plans/java-class-scanner-code-generation-plan.md
+- **Current Stage**: Code Generation (Part 2 - Generation complete, incl. post-approval simplification of CSV/TSV write timing per user request) - unit: java-class-scanner
+- **Next Stage**: Build and Test (per execution-plan.md)
+- **Status**: Awaiting user approval of the (revised) generated code before proceeding to Build and Test

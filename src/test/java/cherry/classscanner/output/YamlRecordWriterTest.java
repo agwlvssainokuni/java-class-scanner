@@ -50,7 +50,7 @@ class YamlRecordWriterTest {
                 List.of("com.example.A"), List.of()
         );
 
-        methodWriter.write(List.of(record), MethodRecord.class, "yaml", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(record), MethodRecord.class, "yaml", file, StandardCharsets.UTF_8);
 
         var content = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(content).contains("parameters:");
@@ -64,7 +64,7 @@ class YamlRecordWriterTest {
         var record = new ClassRecord("src", "com.example.Foo", "Class", null,
                 List.of(), "com.example", "public", List.of());
 
-        classWriter.write(List.of(record), ClassRecord.class, "yaml", file, StandardCharsets.UTF_8, false);
+        classWriter.write(List.of(record), ClassRecord.class, "yaml", file, StandardCharsets.UTF_8);
 
         var content = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(content).contains("superclass: null");
@@ -73,7 +73,7 @@ class YamlRecordWriterTest {
     @Test
     void write_emptyList_producesEmptySequence() throws IOException {
         var file = tempDir.resolve("empty.yaml");
-        methodWriter.write(List.of(), MethodRecord.class, "yaml", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(), MethodRecord.class, "yaml", file, StandardCharsets.UTF_8);
 
         var content = Files.readString(file, StandardCharsets.UTF_8).strip();
         assertThat(content).isEqualTo("--- []");

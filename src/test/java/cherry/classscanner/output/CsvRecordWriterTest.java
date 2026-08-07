@@ -30,7 +30,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * CSV/TSV出力(business-rules.md BR-4, BR-5, BR-6, BR-7, BR-8)をExample-basedで検証する。
+ * CSV/TSV出力(business-rules.md BR-4, BR-5, BR-6, BR-7)をExample-basedで検証する。
+ * BR-8/BR-9改訂により、書き込みは常に新規(ヘッダーあり)の1回書き込みとなる(追記モードは廃止)。
  */
 class CsvRecordWriterTest {
 
@@ -41,11 +42,11 @@ class CsvRecordWriterTest {
     Path tempDir;
 
     @Test
-    void write_firstWrite_includesHeader() throws IOException {
+    void write_includesHeader() throws IOException {
         var file = tempDir.resolve("methods.csv");
         var record = sampleMethod();
 
-        methodWriter.write(List.of(record), MethodRecord.class, "csv", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(record), MethodRecord.class, "csv", file, StandardCharsets.UTF_8);
 
         var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
         assertThat(lines.getFirst())
@@ -54,13 +55,14 @@ class CsvRecordWriterTest {
     }
 
     @Test
-    void write_append_omitsHeaderAndAddsRow() throws IOException {
+    void write_multipleRecords_allIncludedWithSingleHeader() throws IOException {
         var file = tempDir.resolve("methods.csv");
-        methodWriter.write(List.of(sampleMethod()), MethodRecord.class, "csv", file, StandardCharsets.UTF_8, false);
-        methodWriter.write(List.of(sampleMethod()), MethodRecord.class, "csv", file, StandardCharsets.UTF_8, true);
+
+        methodWriter.write(List.of(sampleMethod(), sampleMethod()), MethodRecord.class, "csv", file,
+                StandardCharsets.UTF_8);
 
         var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
-        // ヘッダー1行 + データ2行(初回1件 + 追記1件)
+        // ヘッダー1行 + データ2行
         assertThat(lines).hasSize(3);
         assertThat(lines.get(1)).isEqualTo(lines.get(2));
     }
@@ -76,7 +78,7 @@ class CsvRecordWriterTest {
                 List.of(List.of("com.example.P1", "com.example.P2"), List.of())
         );
 
-        methodWriter.write(List.of(record), MethodRecord.class, "csv", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(record), MethodRecord.class, "csv", file, StandardCharsets.UTF_8);
 
         var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
         // 末尾に空白を含む値はCommons CSVによって自動的に引用符で囲まれる
@@ -89,7 +91,7 @@ class CsvRecordWriterTest {
     void write_tsvFormat_usesTabDelimiter() throws IOException {
         var file = tempDir.resolve("methods.tsv");
 
-        methodWriter.write(List.of(sampleMethod()), MethodRecord.class, "tsv", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(sampleMethod()), MethodRecord.class, "tsv", file, StandardCharsets.UTF_8);
 
         var header = Files.readAllLines(file, StandardCharsets.UTF_8).getFirst();
         assertThat(header).contains("\t").doesNotContain(",");
@@ -99,7 +101,7 @@ class CsvRecordWriterTest {
     void write_emptyList_stillWritesHeaderOnly() throws IOException {
         var file = tempDir.resolve("empty.csv");
 
-        methodWriter.write(List.of(), MethodRecord.class, "csv", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(), MethodRecord.class, "csv", file, StandardCharsets.UTF_8);
 
         var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
         assertThat(lines).hasSize(1);
@@ -111,7 +113,7 @@ class CsvRecordWriterTest {
         var record = new ClassRecord("src", "com.example.Foo", "Class", null,
                 List.of(), "com.example", "public", List.of());
 
-        classWriter.write(List.of(record), ClassRecord.class, "csv", file, StandardCharsets.UTF_8, false);
+        classWriter.write(List.of(record), ClassRecord.class, "csv", file, StandardCharsets.UTF_8);
 
         var lines = Files.readAllLines(file, StandardCharsets.UTF_8);
         assertThat(lines.get(1)).isEqualTo("src,com.example.Foo,Class,,,com.example,public,");

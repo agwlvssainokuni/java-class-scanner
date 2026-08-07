@@ -50,7 +50,7 @@ class JsonRecordWriterTest {
                 List.of("com.example.A"), List.of(List.of("com.example.P1"), List.of())
         );
 
-        methodWriter.write(List.of(record), MethodRecord.class, "json", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(record), MethodRecord.class, "json", file, StandardCharsets.UTF_8);
 
         var content = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(content).contains("\"parameters\" : [ \"java.lang.String\", \"int\" ]");
@@ -64,7 +64,7 @@ class JsonRecordWriterTest {
         var record = new ClassRecord("src", "com.example.Foo", "Class", null,
                 List.of(), "com.example", "public", List.of());
 
-        classWriter.write(List.of(record), ClassRecord.class, "json", file, StandardCharsets.UTF_8, false);
+        classWriter.write(List.of(record), ClassRecord.class, "json", file, StandardCharsets.UTF_8);
 
         var content = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(content).contains("\"superclass\" : null");
@@ -73,7 +73,7 @@ class JsonRecordWriterTest {
     @Test
     void write_isPrettyPrinted() throws IOException {
         var file = tempDir.resolve("methods.json");
-        methodWriter.write(List.of(sampleMethod()), MethodRecord.class, "json", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(sampleMethod()), MethodRecord.class, "json", file, StandardCharsets.UTF_8);
 
         var content = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(content).contains("\n");
@@ -82,7 +82,7 @@ class JsonRecordWriterTest {
     @Test
     void write_emptyList_producesEmptyArray() throws IOException {
         var file = tempDir.resolve("empty.json");
-        methodWriter.write(List.of(), MethodRecord.class, "json", file, StandardCharsets.UTF_8, false);
+        methodWriter.write(List.of(), MethodRecord.class, "json", file, StandardCharsets.UTF_8);
 
         var content = Files.readString(file, StandardCharsets.UTF_8).strip();
         assertThat(content).isEqualTo("[ ]");

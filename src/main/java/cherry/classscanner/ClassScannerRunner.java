@@ -30,7 +30,6 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -47,10 +46,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * 全出力フォーマット(CSV/TSV/JSON/YAML)は、全入力処理後に集約リストを1回だけ書き込む単一モデルに
+ * 統一されている(business-rules.md BR-8/BR-9改訂: 既存のCSV/TSV逐次書き込みとの互換性より
+ * コードのシンプルさを優先するユーザー判断による)。
+ */
 @Component
 public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator {
 
@@ -61,9 +63,6 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private final CsvRecordWriter<?> csvRecordWriter;
     private final JsonRecordWriter<?> jsonRecordWriter;
     private final YamlRecordWriter<?> yamlRecordWriter;
-
-    // CSV/TSV(逐次書き込み)でヘッダーを書き込み済みかどうかを"出力種別:ファイル名"単位で追跡する(BR-8)
-    private final Set<String> csvFilesCreated = new HashSet<>();
 
     public ClassScannerRunner(
             @Nonnull RecordExtractor recordExtractor,
@@ -127,18 +126,15 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
         var format = resolveFormat(args);
         var charset = resolveCharset(args);
-        // JSON/YAMLは全入力処理後に1回だけ書き込む集約モード(BR-9)。CSV/TSVは対象ファイルごとの逐次書き込み。
-        var aggregation = ("json".equals(format) || "yaml".equals(format)) ? Aggregation.empty() : null;
+        var aggregation = Aggregation.empty();
 
         try {
             for (String filePath : files) {
-                processFile(filePath, args, format, charset, aggregation);
+                processFile(filePath, args, aggregation);
             }
         } finally {
             // BR-12: 途中でエラーが発生しても、それまでに蓄積されたレコードをベストエフォートで書き出す
-            if (aggregation != null) {
-                writeAggregated(args, format, charset, aggregation);
-            }
+            writeAggregated(args, format, charset, aggregation);
         }
     }
 
@@ -157,10 +153,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private void processFile(
             @Nonnull String filePath,
             @Nonnull ApplicationArguments args,
-            @Nonnull String format,
-            @Nonnull Charset charset,
-            @Nullable Aggregation aggregation
-    ) throws IOException {
+            @Nonnull Aggregation aggregation
+    ) {
         var quiet = args.containsOption("quiet");
         var isDirectory = Files.isDirectory(Paths.get(filePath));
 
@@ -194,28 +188,16 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             }
 
             if (args.containsOption("classes-output")) {
-                var fileName = args.getOptionValues("classes-output").getFirst();
-                handleOutput(recordExtractor.extractClasses(filePath, filteredClasses), ClassRecord.class,
-                        "classes", fileName, format, charset,
-                        aggregation == null ? null : aggregation.classes(), quiet);
+                aggregation.classes().addAll(recordExtractor.extractClasses(filePath, filteredClasses));
             }
             if (args.containsOption("methods-output")) {
-                var fileName = args.getOptionValues("methods-output").getFirst();
-                handleOutput(recordExtractor.extractMethods(filePath, filteredClasses), MethodRecord.class,
-                        "methods", fileName, format, charset,
-                        aggregation == null ? null : aggregation.methods(), quiet);
+                aggregation.methods().addAll(recordExtractor.extractMethods(filePath, filteredClasses));
             }
             if (args.containsOption("fields-output")) {
-                var fileName = args.getOptionValues("fields-output").getFirst();
-                handleOutput(recordExtractor.extractFields(filePath, filteredClasses), FieldRecord.class,
-                        "fields", fileName, format, charset,
-                        aggregation == null ? null : aggregation.fields(), quiet);
+                aggregation.fields().addAll(recordExtractor.extractFields(filePath, filteredClasses));
             }
             if (args.containsOption("constructors-output")) {
-                var fileName = args.getOptionValues("constructors-output").getFirst();
-                handleOutput(recordExtractor.extractConstructors(filePath, filteredClasses), ConstructorRecord.class,
-                        "constructors", fileName, format, charset,
-                        aggregation == null ? null : aggregation.constructors(), quiet);
+                aggregation.constructors().addAll(recordExtractor.extractConstructors(filePath, filteredClasses));
             }
 
             // Standard output
@@ -232,39 +214,6 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         }
     }
 
-    /**
-     * CSV/TSV(逐次書き込みモード、aggregationTarget=null)は即座にファイルへ書き込む。
-     * JSON/YAML(集約書き込みモード)は全入力処理完了後にまとめて書き込むため、ここではメモリ上のリストへ追加するのみ(BR-9)。
-     */
-    private <X> void handleOutput(
-            @Nonnull List<X> records,
-            @Nonnull Class<X> type,
-            @Nonnull String outputKey,
-            @Nonnull String fileName,
-            @Nonnull String format,
-            @Nonnull Charset charset,
-            @Nullable List<X> aggregationTarget,
-            boolean quiet
-    ) throws IOException {
-        if (aggregationTarget != null) {
-            aggregationTarget.addAll(records);
-            return;
-        }
-
-        var fileKey = outputKey + ":" + fileName;
-        var append = csvFilesCreated.contains(fileKey);
-        if (!append) {
-            csvFilesCreated.add(fileKey);
-        }
-
-        writeRecords(csvRecordWriter, records, type, format, Path.of(fileName), charset, append);
-
-        if (!quiet) {
-            var formatName = "tsv".equals(format) ? "TSV" : "CSV";
-            logger.info("{} {} generated: {} (encoding: {})", outputKey, formatName, fileName, charset);
-        }
-    }
-
     private void writeAggregated(
             @Nonnull ApplicationArguments args,
             @Nonnull String format,
@@ -272,27 +221,31 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             @Nonnull Aggregation aggregation
     ) throws IOException {
         var quiet = args.containsOption("quiet");
-        RecordWriter<?> writer = "yaml".equals(format) ? yamlRecordWriter : jsonRecordWriter;
+        RecordWriter<?> writer = switch (format) {
+            case "json" -> jsonRecordWriter;
+            case "yaml" -> yamlRecordWriter;
+            default -> csvRecordWriter; // csv or tsv
+        };
 
         if (args.containsOption("classes-output")) {
-            writeAggregatedOne(writer, aggregation.classes(), ClassRecord.class, "classes",
+            writeOne(writer, aggregation.classes(), ClassRecord.class, "classes",
                     args.getOptionValues("classes-output").getFirst(), format, charset, quiet);
         }
         if (args.containsOption("methods-output")) {
-            writeAggregatedOne(writer, aggregation.methods(), MethodRecord.class, "methods",
+            writeOne(writer, aggregation.methods(), MethodRecord.class, "methods",
                     args.getOptionValues("methods-output").getFirst(), format, charset, quiet);
         }
         if (args.containsOption("fields-output")) {
-            writeAggregatedOne(writer, aggregation.fields(), FieldRecord.class, "fields",
+            writeOne(writer, aggregation.fields(), FieldRecord.class, "fields",
                     args.getOptionValues("fields-output").getFirst(), format, charset, quiet);
         }
         if (args.containsOption("constructors-output")) {
-            writeAggregatedOne(writer, aggregation.constructors(), ConstructorRecord.class, "constructors",
+            writeOne(writer, aggregation.constructors(), ConstructorRecord.class, "constructors",
                     args.getOptionValues("constructors-output").getFirst(), format, charset, quiet);
         }
     }
 
-    private <X> void writeAggregatedOne(
+    private <X> void writeOne(
             @Nonnull RecordWriter<?> writer,
             @Nonnull List<X> records,
             @Nonnull Class<X> type,
@@ -302,8 +255,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             @Nonnull Charset charset,
             boolean quiet
     ) throws IOException {
-        // append=false: 集約書き込みモードは常に全体を1回で新規書き込みする(BR-9)。0件でも空配列/空シーケンスを出力する(BR-7)。
-        writeRecords(writer, records, type, format, Path.of(fileName), charset, false);
+        writeRecords(writer, records, type, format, Path.of(fileName), charset);
 
         if (!quiet) {
             logger.info("{} {} generated: {} (encoding: {})", outputKey, format.toUpperCase(), fileName, charset);
@@ -317,10 +269,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             @Nonnull Class<X> type,
             @Nonnull String format,
             @Nonnull Path outputPath,
-            @Nonnull Charset charset,
-            boolean append
+            @Nonnull Charset charset
     ) throws IOException {
-        ((RecordWriter<X>) writer).write(records, type, format, outputPath, charset, append);
+        ((RecordWriter<X>) writer).write(records, type, format, outputPath, charset);
     }
 
     @Nonnull
@@ -431,7 +382,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     }
 
     /**
-     * JSON/YAML集約書き込みモード(BR-9)で、全入力を横断して蓄積するレコードの保持先。
+     * 全フォーマット共通で、全入力を横断して蓄積するレコードの保持先(BR-8/BR-9)。
      */
     private record Aggregation(
             @Nonnull List<ClassRecord> classes,

@@ -94,16 +94,10 @@ The application supports multiple output modes:
 
 ## Architecture Details
 
-### CSV vs JSON/YAML write timing
-This is the one architectural asymmetry worth understanding before touching `ClassScannerRunner`:
-- **CSV/TSV**: `CsvRecordWriter.write()` is called once per input file, incrementally, exactly like the original pre-refactor code.
-- **JSON/YAML**: because a JSON array / YAML sequence is a single structured document (not append-friendly like a text file), `ClassScannerRunner` accumulates DTOs from every input file into an in-memory `Aggregation` record, and calls `JsonRecordWriter`/`YamlRecordWriter` exactly once, in a `finally` block after the scan loop — so a best-effort write still happens even if a later input file fails mid-loop. An empty result still produces `[]` rather than no file (BR-7).
+### Unified write timing (all formats aggregate-then-write-once)
+`ClassScannerRunner` accumulates DTOs from every input file into an in-memory `Aggregation` record, then calls the selected `RecordWriter` (`CsvRecordWriter`/`JsonRecordWriter`/`YamlRecordWriter`) exactly once per output kind, in a `finally` block after the scan loop — so a best-effort write still happens even if a later input file fails mid-loop (BR-12). An empty result still produces a file (CSV/TSV: header only; JSON/YAML: `[]`) rather than no file at all (BR-7).
 
-### CSV Output Strategy
-The application uses an append mode strategy for CSV files to handle multiple input sources:
-- **First write**: Overwrites file with headers
-- **Subsequent writes**: Appends data only
-- **File tracking**: `ClassScannerRunner` tracks a `Set<String>` of `"outputKind:filename"` keys (e.g. `methods:filename.csv`) to manage header state independently per output kind/file. `CsvRecordWriter` itself is stateless — it just does what the `append` boolean argument tells it.
+**History**: CSV/TSV originally wrote incrementally per input file (streaming, matching the pre-refactor implementation), while only JSON/YAML used this aggregate-then-write-once model — a JSON array/YAML sequence can't be "appended to" like a text file. This asymmetry was deliberately removed post-Code-Generation at the user's request, trading away CSV/TSV's low-memory streaming characteristic for a simpler, single code path (`RecordWriter.write()` no longer takes an `append` parameter at all). See `functional-design/business-rules.md` BR-8/BR-9 for the full rationale.
 
 ### Output Column/Key Structure
 All outputs include a source path column/key first. CSV/TSV headers are Japanese; JSON/YAML keys are English camelCase (same field, different naming convention — see README.md for the full mapping table):

@@ -44,5 +44,6 @@ sequenceDiagram
 ```
 
 ### 設計上の注意点
-- CSV/TSVとJSON/YAMLで「いつWriterを呼ぶか」が異なる非対称性は、`ClassScannerRunner`内のオーケストレーションロジックに閉じ込め、`RecordExtractor`/`RecordWriter`側には波及させない（DTO・Writerはフォーマットや呼び出しタイミングに依存しないシンプルな責務を保つ）。
 - 具体的なメソッド分割・実装詳細はConstruction PhaseのFunctional Designで確定する。
+
+> **改訂（Code Generation完了後）**: 上記6.のCSV/TSVとJSON/YAMLの書き込みタイミングの非対称性は、Code Generation完了後にユーザー判断で解消された。既存のCSV/TSV逐次書き込み挙動との互換性よりコードのシンプルさを優先し、全フォーマットが「全対象処理後に集約リストを1回だけ書き込む」という単一モデルに統一されている。詳細は`functional-design/business-rules.md` BR-8/BR-9改訂を参照。

@@ -25,9 +25,10 @@ import java.util.List;
 
 /**
  * DTO(model)のリストを指定フォーマットでファイルへ書き出す書式化層の共通インターフェース(Strategyパターン)。
- * {@code type}は、recordsが空でもCSV/TSV実装がヘッダーを解決できるようにするための型トークン(business-rules.md BR-7)。
+ * 全フォーマット共通で、呼び出し側(ClassScannerRunner)が全入力を集約したリストを1回だけ渡す想定のため
+ * 追記(append)の概念は持たない(business-rules.md BR-8/BR-9改訂)。
+ * {@code type}は、recordsが空でもCSV/TSV実装がヘッダーを解決できるようにするための型トークン(BR-7)。
  * {@code format}はCSV/TSVの区別に使う("csv"または"tsv")。JSON/YAML用実装は{@code type}/{@code format}を使用しない。
- * {@code append}はCSV/TSVの追記制御に使う(BR-8)。JSON/YAML用実装は全入力集約後の1回書き込みのみのため使用しない(BR-9)。
  */
 public interface RecordWriter<T> {
 
@@ -36,7 +37,6 @@ public interface RecordWriter<T> {
             @Nonnull Class<T> type,
             @Nonnull String format,
             @Nonnull Path outputPath,
-            @Nonnull Charset charset,
-            boolean append
+            @Nonnull Charset charset
     ) throws IOException;
 }

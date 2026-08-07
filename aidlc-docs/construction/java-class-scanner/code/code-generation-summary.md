@@ -67,5 +67,15 @@ Code Generation（unit: java-class-scanner）で生成・修正したファイ�
 | NFR-4 | PBT方針(Partial: PBT-02/03/07/08/09) | 実装済み（PBT-02, PBT-03のテストを実装。PBT-07/08/09はjqwikのジェネレータ品質・シュリンク機能・フレームワーク選定として自動的に充足） |
 
 ## 既知の制約・後続課題
-- `ClassScannerRunnerTest`の`run_ioErrorWritingOutput_exitCodeIsOne`は、出力先ディレクトリ不在によるIOExceptionでのexitCode検証のみを行っており、BR-12の「複数入力中の1件だけがエラーになりJSON/YAMLがベストエフォート書き込みされる」シナリオそのものは、信頼性の高い形で再現するテスト構築が難しく個別のテストとしては未実装（try/finally構造による設計上の担保に留まる）。
+- `ClassScannerRunnerTest`の`run_ioErrorWritingOutput_exitCodeIsOne`は、出力先ディレクトリ不在によるIOExceptionでのexitCode検証のみを行っており、BR-12の「複数入力中の1件だけがエラーになりベストエフォート書き込みされる」シナリオそのものは、信頼性の高い形で再現するテスト構築が難しく個別のテストとしては未実装（try/finally構造による設計上の担保に留まる）。
 - YAML/JSON出力のpretty-print・null表現等の細部は実際のJackson出力を都度確認しながら実装しており、将来Jacksonのバージョンが上がった際は出力フォーマットの変化がないか確認が望ましい。
+
+## 追記: Code Generation承認後の簡略化（BR-8/BR-9改訂）
+
+ユーザーレビュー時に「CSV/TSVも最後にまとめて出力する方がシンプルになるか」という質問があり、既存のCSV/TSV逐次書き込み挙動との互換性維持は不要と判断されたため、以下の簡略化を実施した。
+
+- `RecordWriter<T>.write()`から`append`引数を削除（全フォーマット共通で常に新規1回書き込みとなったため不要）。
+- `ClassScannerRunner`から`csvFilesCreated`（追記制御用の状態管理）と、CSV/TSV用の逐次書き込みモード・JSON/YAML用の集約書き込みモードという二重の分岐ロジックを削除。全フォーマットが単一の`Aggregation`集約→1回書き込みという経路に統一され、`ClassScannerRunner`の行数が正味約50行減少した。
+- `functional-design/business-rules.md`（BR-8/BR-9統合、BR-12一般化）、`nfr-requirements.md`（NFR-R1の適用範囲拡大）、`inception/application-design/services.md`（非対称性の解消を追記）、`CLAUDE.local.md`・`README.md`・`README_en.md`（該当記述の更新）を連動して更新した。
+- トレードオフ: CSV/TSVが従来持っていた「大規模スキャン時の省メモリ・ストリーミング特性」は失われる。ユーザーが明示的に許容した判断である。
+- `./gradlew build`で全38テスト成功を再確認済み。

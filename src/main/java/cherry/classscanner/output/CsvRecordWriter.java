@@ -34,8 +34,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * CSV/TSV用のRecordWriter実装。既存のCSV出力仕様(列構成・デリミタ結合・ヘッダー追記制御)を踏襲する
- * (business-rules.md BR-4, BR-5, BR-6, BR-8)。
+ * CSV/TSV用のRecordWriter実装。列構成・デリミタ結合(business-rules.md BR-4, BR-5, BR-6)を踏襲する。
+ * 呼び出し側が全入力を集約したリストを1回だけ渡す想定のため、常にヘッダー付きで新規書き込みする
+ * (BR-8/BR-9改訂)。
  */
 @Component
 public class CsvRecordWriter<T> implements RecordWriter<T> {
@@ -46,14 +47,12 @@ public class CsvRecordWriter<T> implements RecordWriter<T> {
             @Nonnull Class<T> type,
             @Nonnull String format,
             @Nonnull Path outputPath,
-            @Nonnull Charset charset,
-            boolean append
+            @Nonnull Charset charset
     ) throws IOException {
         var baseFormat = "tsv".equals(format) ? CSVFormat.TDF : CSVFormat.DEFAULT;
-        var csvFormat = append ? baseFormat :
-                baseFormat.builder().setHeader(headersFor(type).toArray(new String[0])).get();
+        var csvFormat = baseFormat.builder().setHeader(headersFor(type).toArray(new String[0])).get();
 
-        try (var writer = new FileWriter(outputPath.toFile(), charset, append);
+        try (var writer = new FileWriter(outputPath.toFile(), charset, false);
              var printer = new CSVPrinter(writer, csvFormat)) {
             for (var record : records) {
                 printer.printRecord(rowValues(record));

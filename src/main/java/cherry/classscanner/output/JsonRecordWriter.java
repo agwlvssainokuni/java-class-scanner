@@ -30,8 +30,8 @@ import java.util.List;
 
 /**
  * JSON用のRecordWriter実装。複数値項目はネイティブなarray、null相当値は明示的なnullとして出力する
- * (business-rules.md BR-4, BR-6)。全入力を集約したリストを1回だけ書き込む想定のため{@code append}は使用しない
- * (BR-9)。
+ * (business-rules.md BR-4, BR-6)。全入力を集約したリストを1回だけ書き込む想定のため追記は行わない
+ * (BR-8/BR-9)。
  */
 @Component
 public class JsonRecordWriter<T> implements RecordWriter<T> {
@@ -48,8 +48,7 @@ public class JsonRecordWriter<T> implements RecordWriter<T> {
             @Nonnull Class<T> type,
             @Nonnull String format,
             @Nonnull Path outputPath,
-            @Nonnull Charset charset,
-            boolean append
+            @Nonnull Charset charset
     ) throws IOException {
         try (var writer = new OutputStreamWriter(Files.newOutputStream(outputPath), charset)) {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, records);
