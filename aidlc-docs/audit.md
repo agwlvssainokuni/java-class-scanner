@@ -191,3 +191,11 @@
 **Context**: CONSTRUCTION PHASE - NFR Design (Steps 2-4, unit: java-class-scanner)
 
 ---
+
+## NFR Design - Artifacts Generated (unit: java-class-scanner)
+**Timestamp**: 2026-08-07T00:37:39Z
+**User Input**: "Q2=A, Q1はDIできない？"
+**AI Response**: "User proposed Spring DI over the AI's originally recommended static-final shared instance for Question 1. Agreed this is better given ClassScannerRunner is already a Spring @Component - revised Question 1 to option B: CsvRecordWriter/JsonRecordWriter/YamlRecordWriter/RecordExtractor become @Component beans, JSON uses Spring Boot's auto-configured ObjectMapper bean, YAML uses a custom YAMLMapper @Bean, and ClassScannerRunner receives all writers via constructor injection, selecting among them by --format. Question 2 recorded as A (pretty-print JSON). Generated aidlc-docs/construction/java-class-scanner/nfr-design/{nfr-design-patterns.md, logical-components.md} documenting the N/A categories, the DI-based component management pattern (superseding Application Design's 'manual new per call' language for Writer instantiation - noted as an explicit refinement, Application Design docs left as historical record), and the Jackson mapper bean definitions. Marked all checkboxes complete. Updated aidlc-state.md marking NFR Design complete pending approval, next stage Code Generation (Infrastructure Design confirmed SKIP per execution-plan.md)."
+**Context**: CONSTRUCTION PHASE - NFR Design (Steps 5-9, unit: java-class-scanner)
+
+---

@@ -5,12 +5,12 @@ NFR Requirementsの結果、実質的なNFRは「JSON/YAML集約書き込みの�
 
 ## Plan
 
-- [ ] 該当しないNFR設計カテゴリを整理し、根拠を明記する
-- [ ] Jacksonマッパー（ObjectMapper/YAMLMapper）のインスタンス管理方針を決定する
-- [ ] JSON出力の整形（pretty-print）方針を決定する
-- [ ] 上記に基づき、以下の成果物を生成する:
-  - [ ] `aidlc-docs/construction/java-class-scanner/nfr-design/nfr-design-patterns.md`
-  - [ ] `aidlc-docs/construction/java-class-scanner/nfr-design/logical-components.md`
+- [x] 該当しないNFR設計カテゴリを整理し、根拠を明記する
+- [x] Jacksonマッパー（ObjectMapper/YAMLMapper）のインスタンス管理方針を決定する
+- [x] JSON出力の整形（pretty-print）方針を決定する
+- [x] 上記に基づき、以下の成果物を生成する:
+  - [x] `aidlc-docs/construction/java-class-scanner/nfr-design/nfr-design-patterns.md`
+  - [x] `aidlc-docs/construction/java-class-scanner/nfr-design/logical-components.md`
 
 ## 該当しないNFR設計カテゴリ（AI判定、根拠付き）
 
@@ -24,13 +24,13 @@ NFR Requirementsの結果、実質的なNFRは「JSON/YAML集約書き込みの�
 ### Question 1: Jacksonマッパー（ObjectMapper/YAMLMapper）のインスタンス管理方針
 `JsonRecordWriter`/`YamlRecordWriter`は、それぞれJacksonのマッパーインスタンスをどう管理しますか？
 
-A) クラス内で`static final`な共有インスタンスとして1つ保持し使い回す（Jacksonのマッパーはスレッドセーフかつ生成コストがあるため、共有するのがベストプラクティス） ※AI推奨
+A) クラス内で`static final`な共有インスタンスとして1つ保持し使い回す（Jacksonのマッパーはスレッドセーフかつ生成コストがあるため、共有するのがベストプラクティス）
 
-B) 呼び出しごとに新規生成する
+B) Spring DIで管理する。`JsonRecordWriter`/`YamlRecordWriter`（および`CsvRecordWriter`）を`@Component`とし、コンストラクタインジェクションで`ObjectMapper`（JSON用。Spring Bootの自動構成が提供する既定Beanを利用）・`YAMLMapper`（YAML用。専用の`@Bean`定義を追加）を受け取る。`ClassScannerRunner`も各Writerをコンストラクタインジェクションで受け取り、`--format`値に応じて選択する ※ユーザー指摘により採用（既存の`ClassScannerRunner`自体が`@Component`であり、Spring Bootアプリとして一貫性のあるDIベースの設計とするため。static final共有インスタンスより自然）
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: B
 
 ### Question 2: JSON出力の整形（pretty-print）方針
 JSON出力はインデント付き（人間が読みやすい整形）にしますか、それともコンパクト（改行・インデントなし）にしますか？
@@ -41,4 +41,4 @@ B) コンパクトな1行形式で出力する（ファイルサイズを重視�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
