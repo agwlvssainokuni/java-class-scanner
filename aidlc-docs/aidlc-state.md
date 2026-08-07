@@ -51,7 +51,7 @@
 - [x] NFR Requirements (artifacts generated, awaiting user approval)
 - [x] NFR Design (artifacts generated, awaiting user approval)
 - [ ] Infrastructure Design - SKIP
-- [ ] Code Generation - EXECUTE
+- [ ] Code Generation - EXECUTE (Part 1 Planning complete, awaiting user approval of plan)
 - [ ] Build and Test - EXECUTE
 
 ### OPERATIONS PHASE
@@ -59,6 +59,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: NFR Design (Generation Complete) - unit: java-class-scanner
-- **Next Stage**: Code Generation (per execution-plan.md; Infrastructure Design is SKIP)
-- **Status**: Awaiting user approval of aidlc-docs/construction/java-class-scanner/nfr-design/
+- **Current Stage**: Code Generation (Part 1 - Planning) - unit: java-class-scanner
+- **Next Stage**: Code Generation (Part 2 - Generation) once plan approved
+- **Status**: Awaiting user approval of aidlc-docs/construction/plans/java-class-scanner-code-generation-plan.md

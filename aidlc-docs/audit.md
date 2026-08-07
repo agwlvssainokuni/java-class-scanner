@@ -199,3 +199,17 @@
 **Context**: CONSTRUCTION PHASE - NFR Design (Steps 5-9, unit: java-class-scanner)
 
 ---
+
+## NFR Design - Approval
+**Timestamp**: 2026-08-07T00:39:11Z
+**User Input**: "承認します。Code Generationへ進んでください。"
+**AI Response**: "Approval recorded. Infrastructure Design confirmed SKIP per execution-plan.md. Proceeding to Code Generation per .aidlc-rule-details/construction/code-generation.md, unit: java-class-scanner."
+**Context**: CONSTRUCTION PHASE - NFR Design -> Code Generation transition
+
+---
+
+## Code Generation - Plan Created (Part 1 - Planning, unit: java-class-scanner)
+**Timestamp**: 2026-08-07T00:41:42Z
+**User Input**: (continuation of the above approval - no separate input during this stage)
+**AI Response**: "Created aidlc-docs/construction/plans/java-class-scanner-code-generation-plan.md with 10 numbered steps covering: build.gradle dependency updates, model/extract/output package generation, Jackson config, ClassScannerRunner orchestration rewrite (CLI renaming, format extension, verbose additions, error handling), tests for each new component (example-based + jqwik PBT per PBT-10 separation), README/CLAUDE.local.md doc updates, and a code-generation-summary.md. Resolved one remaining implementation-level ambiguity not covered by earlier stages without a new question round (per code-generation.md's planning phase, this is implementation detail not requiring stakeholder input): RecordWriter<T>.write(records, type, outputPath, charset, append) - passing Class<T> type so CsvRecordWriter can resolve headers even for empty lists (BR-7), using Java 25 pattern-matching switch internally; JSON/YAML writers ignore the type parameter. Logging the approval prompt now before asking the user."
+**Context**: CONSTRUCTION PHASE - Code Generation (Part 1, Steps 1-6, unit: java-class-scanner)
