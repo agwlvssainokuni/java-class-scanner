@@ -151,3 +151,19 @@
 **Context**: CONSTRUCTION PHASE - Functional Design (Steps 5-9, unit: java-class-scanner)
 
 ---
+
+## Functional Design - Approval
+**Timestamp**: 2026-08-07T00:08:00Z
+**User Input**: "承認します。NFR Requirementsへ進んでください。"
+**AI Response**: "Approval recorded. Proceeding to NFR Requirements per .aidlc-rule-details/construction/nfr-requirements.md, unit: java-class-scanner."
+**Context**: CONSTRUCTION PHASE - Functional Design -> NFR Requirements transition
+
+---
+
+## NFR Requirements - Plan Created (unit: java-class-scanner)
+**Timestamp**: 2026-08-07T00:10:13Z
+**User Input**: (continuation of the above approval - no separate input during this stage)
+**AI Response**: "Created aidlc-docs/construction/plans/java-class-scanner-nfr-requirements-plan.md. Marked Scalability/Availability/Security/Usability/Reliability as N/A with rationale (local single-user CLI, no deserialization surface since Jackson is write-only here, UX already fixed in requirements.md, error handling already fixed in Functional Design BR-12). Verified via Maven Central that Spring Boot 4.1.0's BOM imports both a Jackson 2.x BOM (com.fasterxml.jackson, via jackson-2-bom.version) and a Jackson 3.x BOM (tools.jackson, via jackson-bom.version=3.1.4) - flagged this as Question 1 since Jackson 3's package namespace differs from the well-known Jackson 2, recommending Jackson 3.x (tools.jackson.core:jackson-databind, tools.jackson.dataformat:jackson-dataformat-yaml, version left to Spring Boot BOM management) to match the project's consistent latest-version adoption pattern. Raised Question 2 on whether the JSON/YAML in-memory aggregation (per Functional Design BR-9) needs memory safeguards for large scans, recommending no special handling for now. Verified jqwik latest version via Maven Central metadata (1.10.1) and proposed it as testImplementation, asking for confirmation."
+**Context**: CONSTRUCTION PHASE - NFR Requirements (Steps 2-4, unit: java-class-scanner)
+
+---

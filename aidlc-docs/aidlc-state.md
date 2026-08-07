@@ -48,7 +48,7 @@
 
 ### CONSTRUCTION PHASE (Per-Unit Loop - 1 unit: java-class-scanner本体)
 - [x] Functional Design (artifacts generated, awaiting user approval)
-- [ ] NFR Requirements - EXECUTE
+- [ ] NFR Requirements - EXECUTE (in progress - plan + questions created, awaiting user answers)
 - [ ] NFR Design - EXECUTE
 - [ ] Infrastructure Design - SKIP
 - [ ] Code Generation - EXECUTE
@@ -59,6 +59,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: Functional Design (Generation Complete) - unit: java-class-scanner
-- **Next Stage**: NFR Requirements (per execution-plan.md)
-- **Status**: Awaiting user approval of aidlc-docs/construction/java-class-scanner/functional-design/
+- **Current Stage**: NFR Requirements (Planning) - unit: java-class-scanner
+- **Next Stage**: NFR Requirements (Generation) once questions answered
+- **Status**: Awaiting user answers in aidlc-docs/construction/plans/java-class-scanner-nfr-requirements-plan.md
