@@ -76,6 +76,6 @@ public interface RecordWriter<T> {
   - 対象（修正）: `README.md`, `README_en.md`, `CLAUDE.local.md`
   - 内容: 新CLIオプション体系（`--classes-output`等）、`--format`の`json`/`yaml`対応、CSV列構成に加えJSON/YAMLのキー命名（camelCase）を反映。旧`*-csv`オプションの記載を削除。`CLAUDE.local.md`には抽出/書式化分離アーキテクチャ、CSV/JSON・YAMLの書き込みタイミングの非対称性、Jackson 3のObjectMapper/YAMLMapper型衝突の落とし穴を追記。
 
-- [ ] **Step 10: コード生成サマリ作成**
+- [x] **Step 10: コード生成サマリ作成**
   - 対象（新規）: `aidlc-docs/construction/java-class-scanner/code/code-generation-summary.md`
   - 内容: 生成・修正したファイル一覧とFR/NFR/BRとの対応関係を記録するmarkdownサマリ（アプリケーションコードではなくドキュメントのみ）。

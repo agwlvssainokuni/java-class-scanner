@@ -51,7 +51,7 @@
 - [x] NFR Requirements (artifacts generated, awaiting user approval)
 - [x] NFR Design (artifacts generated, awaiting user approval)
 - [ ] Infrastructure Design - SKIP
-- [ ] Code Generation - EXECUTE (Part 2 in progress - Steps 1-9/10 complete: source, tests, docs; ./gradlew build green)
+- [x] Code Generation (all 10 steps complete for unit java-class-scanner, awaiting user approval)
 - [ ] Build and Test - EXECUTE
 
 ### OPERATIONS PHASE
