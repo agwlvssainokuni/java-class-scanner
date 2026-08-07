@@ -333,3 +333,18 @@
 **User Input**: "audit.mdの順序を点検。"
 **AI Response**: "Found that the previous 'Code Generation - Final Approval / Transition to Build and Test' entry had been inserted mid-file (its Edit matched an old_string that wasn't at the true file end), landing it before the 'processFile should return...' entry despite being chronologically later - and 5 intervening Request Changes rounds (FQCN cleanup, Javadoc gaps, copyright year, application.yml switch, demo.sh addition) had never been logged at all, only summarized in a parenthetical aside on the misplaced entry. Cross-checked real commit timestamps via `git log --pretty=format:%aI` for caeebcc/f3c60c9/aeaabdd/a5d3343/a175479 to reconstruct accurate ordering, moved the Final Approval entry to the true end of the file, moved processFile-return entry back before the JSpecify entry, and inserted the 5 missing entries in between at their correct chronological positions. Verified the full file now reads in strict timestamp order from Workspace Detection (2026-08-05T15:08:58Z) through this correction."
 **Context**: CONSTRUCTION PHASE - Code Generation (audit trail integrity correction, not a code/design change)
+
+---
+
+## Build and Test Stage
+**Timestamp**: 2026-08-07T02:38:31Z
+**User Input**: "Build and Testへ進んでください。" (this executes the request from before the audit.md ordering correction interruption)
+**AI Response**: "Executed Build and Test per .aidlc-rule-details/construction/build-and-test.md. Ran ./gradlew clean build (BUILD SUCCESSFUL, ~11s, 38/38 unit tests pass, 0 failures). Ran ./demo.sh as the integration test vehicle (11 sections, exit code 0) since this is a single-process CLI with no inter-service boundaries - the AI-DLC template's 'service interaction' framing doesn't literally apply, so integration testing here means confirming Spring DI wiring at startup and full end-to-end scan->extract->write behavior against a real external project (demo/src/com/example/library), distinct from the fixture-based unit tests. Generated aidlc-docs/construction/build-and-test/{build-instructions.md, unit-test-instructions.md, integration-test-instructions.md, build-and-test-summary.md}. Marked Performance/Contract/Security/E2E tests as N/A with rationale (no performance requirements, no service contracts, security-baseline opted out, E2E already covered by the integration scenario). Updated aidlc-state.md marking Build and Test complete, noting Operations PHASE is a placeholder not applicable to this local CLI tool."
+**Build Status**: Success
+**Test Status**: Pass (38/38 unit tests, 2/2 integration scenarios)
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- build-and-test-summary.md
+**Context**: CONSTRUCTION PHASE - Build and Test (unit: java-class-scanner, all units complete)

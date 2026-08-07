@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-05T15:08:58Z
-- **Current Stage**: CONSTRUCTION - Code Generation (Part 2 complete incl. post-approval simplification, unit: java-class-scanner)
+- **Current Stage**: CONSTRUCTION - Build and Test (complete, awaiting user approval)
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -52,13 +52,13 @@
 - [x] NFR Design (artifacts generated, awaiting user approval)
 - [ ] Infrastructure Design - SKIP
 - [x] Code Generation (all 10 steps complete for unit java-class-scanner, awaiting user approval)
-- [ ] Build and Test - EXECUTE
+- [x] Build and Test - EXECUTE (complete: build success, 38/38 unit tests pass, 2/2 integration scenarios pass via demo.sh)
 
 ### OPERATIONS PHASE
 - [ ] Operations - PLACEHOLDER
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: Code Generation (Part 2 - Generation complete, incl. post-approval simplification of CSV/TSV write timing per user request) - unit: java-class-scanner
-- **Next Stage**: Build and Test (per execution-plan.md)
-- **Status**: Awaiting user approval of the (revised) generated code before proceeding to Build and Test
+- **Current Stage**: Build and Test (complete)
+- **Next Stage**: Operations (PLACEHOLDER - not applicable to this local CLI tool; CONSTRUCTION PHASE is effectively the end of this AI-DLC workflow run)
+- **Status**: Awaiting user approval of aidlc-docs/construction/build-and-test/build-and-test-summary.md
