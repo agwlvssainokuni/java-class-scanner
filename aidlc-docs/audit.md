@@ -127,3 +127,19 @@
 **Context**: INCEPTION PHASE - Application Design (Part 2 - Generation, Steps 8-12)
 
 ---
+
+## Application Design - Approval / INCEPTION Phase Complete
+**Timestamp**: 2026-08-06T23:59:08Z
+**User Input**: "承認します。Functional Designへ進んでください。"
+**AI Response**: "Approval recorded (including the modifiers-as-string judgment call). INCEPTION PHASE is now complete (Workspace Detection, Reverse Engineering, Requirements Analysis, Workflow Planning, Application Design all approved; User Stories and Units Generation skipped per execution-plan.md). Proceeding to CONSTRUCTION PHASE, Per-Unit Loop, Functional Design stage for the single implicit unit (java-class-scanner本体) per .aidlc-rule-details/construction/functional-design.md."
+**Context**: INCEPTION PHASE complete -> CONSTRUCTION PHASE (Per-Unit Loop) - Functional Design
+
+---
+
+## Functional Design - Plan Created (unit: java-class-scanner)
+**Timestamp**: 2026-08-07T00:00:43Z
+**User Input**: (continuation of the above approval - no separate input during this stage)
+**AI Response**: "Since Units Generation was skipped, treated the whole application as the single implicit unit 'java-class-scanner' per execution-plan.md's rationale, and created aidlc-docs/construction/plans/java-class-scanner-functional-design-plan.md with 3 clarifying questions on business rules not yet decided: (1) what happens to already-processed records if a later input file errors during JSON/YAML's batch-write flow (AI recommends best-effort: write what succeeded, to approximate CSV's partial-write-on-error behavior), (2) whether to write an empty array/sequence file when zero records result, for consistency with CSV always writing at least a header (AI recommends yes, write empty file), (3) whether null-valued fields (e.g. ClassRecord.superclass for interfaces) should serialize as explicit null or be omitted from JSON/YAML (AI recommends explicit null for consistent schema). Presented the plan to the user for answers."
+**Context**: CONSTRUCTION PHASE - Functional Design (Steps 2-4, unit: java-class-scanner)
+
+---
