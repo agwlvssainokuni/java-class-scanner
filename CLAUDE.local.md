@@ -29,6 +29,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 java -jar build/libs/java-class-scanner-*.jar [options] <file|directory>...
 ```
 
+### Run the demo
+```bash
+./demo.sh
+```
+Requires `./gradlew bootJar` to have been run first. Compiles the small sample project under `demo/src/com/example/library` (a plain `javac` build, no Gradle involved) into `demo/build/` and runs the tool against it, exercising most CLI options end-to-end with visible output. `demo/build/` is gitignored (covered by the existing `build/` rule) and gets recreated on every run.
+
 ## Project Architecture
 
 This is a Spring Boot command-line application that scans Java class files and directories to extract class information and output it in various formats.

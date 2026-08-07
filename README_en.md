@@ -29,6 +29,16 @@ Create executable JAR file:
 ./gradlew bootJar
 ```
 
+## Demo
+
+After running `./gradlew bootJar`, you can run the demo:
+
+```bash
+./demo.sh
+```
+
+It compiles a small sample project (a library domain model) under `demo/src` on the fly, then runs through the tool's main features against it — console output, CSV/TSV/JSON/YAML output, multi-input aggregation, and invalid-value fallbacks — showing the results of each.
+
 ## Usage
 
 ### Basic Usage
