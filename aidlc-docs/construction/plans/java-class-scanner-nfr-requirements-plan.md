@@ -5,13 +5,13 @@
 
 ## Plan
 
-- [ ] 該当しないNFRカテゴリを整理し、根拠を明記する
-- [ ] JSON/YAML出力のメモリ使用量に関する方針を決定する
-- [ ] Jackson依存関係（groupId/バージョン）を決定する
-- [ ] jqwik依存関係（バージョン）を決定する
-- [ ] 上記に基づき、以下の成果物を生成する:
-  - [ ] `aidlc-docs/construction/java-class-scanner/nfr-requirements/nfr-requirements.md`
-  - [ ] `aidlc-docs/construction/java-class-scanner/nfr-requirements/tech-stack-decisions.md`
+- [x] 該当しないNFRカテゴリを整理し、根拠を明記する
+- [x] JSON/YAML出力のメモリ使用量に関する方針を決定する
+- [x] Jackson依存関係（groupId/バージョン）を決定する
+- [x] jqwik依存関係（バージョン）を決定する
+- [x] 上記に基づき、以下の成果物を生成する:
+  - [x] `aidlc-docs/construction/java-class-scanner/nfr-requirements/nfr-requirements.md`
+  - [x] `aidlc-docs/construction/java-class-scanner/nfr-requirements/tech-stack-decisions.md`
 
 ## 該当しないNFRカテゴリ（AI判定、根拠付き）
 
@@ -32,7 +32,7 @@ B) Jackson 2系（`com.fasterxml.jackson.core:jackson-databind`, `com.fasterxml.
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ### Question 2: JSON/YAML集約書き込みのメモリ使用量方針
 Functional DesignのBR-9により、JSON/YAML出力は全レコードをメモリ上に蓄積してから1回で書き出します。大規模なJAR/ディレクトリをスキャンした場合、CSV/TSVの逐次書き込みと比べてメモリ使用量が増える可能性があります。この点についてどう扱いますか？
@@ -43,7 +43,7 @@ B) メモリ使用量に上限を設ける、またはストリーミングJSON/
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ## Tech Stack Decision（確認）
 
@@ -52,4 +52,4 @@ X) Other (please describe after [Answer]: tag below)
 
 上記jqwikバージョンでよろしいですか？
 
-[Answer]: 
+[Answer]: はい（1.10.1で確定）

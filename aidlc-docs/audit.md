@@ -167,3 +167,11 @@
 **Context**: CONSTRUCTION PHASE - NFR Requirements (Steps 2-4, unit: java-class-scanner)
 
 ---
+
+## NFR Requirements - Artifacts Generated (unit: java-class-scanner)
+**Timestamp**: 2026-08-07T00:12:41Z
+**User Input**: "Q1=A, Q2=A、jqwikのバージョンはそれでお願いします"
+**AI Response**: "Recorded Question 1=A (Jackson 3.x / tools.jackson, version left to Spring Boot BOM), Question 2=A (no special memory safeguards for JSON/YAML in-memory aggregation), and jqwik 1.10.1 confirmed. Generated aidlc-docs/construction/java-class-scanner/nfr-requirements/{nfr-requirements.md, tech-stack-decisions.md} documenting the N/A categories with rationale, the two decisions (NFR-R1 memory policy, NFR-R2 tech stack), and a dependency table with exact groupId:artifactId/version/scope for Jackson databind, Jackson YAML dataformat, and jqwik, plus a build.gradle snippet preview. Marked all checkboxes complete. Updated aidlc-state.md marking NFR Requirements complete pending approval, next stage NFR Design."
+**Context**: CONSTRUCTION PHASE - NFR Requirements (Steps 5-9, unit: java-class-scanner)
+
+---
