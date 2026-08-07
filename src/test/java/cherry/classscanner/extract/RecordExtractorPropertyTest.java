@@ -26,6 +26,8 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -38,7 +40,7 @@ class RecordExtractorPropertyTest {
 
     @Property
     void filterAndSortByPackage_matchesPrefixRuleForArbitraryFilters(
-            @ForAll("packageFilters") java.util.List<String> filters
+            @ForAll("packageFilters") List<String> filters
     ) {
         try (ScanResult scanResult = new ClassGraph()
                 .enableAllInfo()
@@ -59,7 +61,7 @@ class RecordExtractorPropertyTest {
     }
 
     @Provide
-    Arbitrary<java.util.List<String>> packageFilters() {
+    Arbitrary<List<String>> packageFilters() {
         var matching = Arbitraries.of(
                 "cherry.classscanner.fixtures",
                 "cherry.classscanner.fixtures.SampleClass",

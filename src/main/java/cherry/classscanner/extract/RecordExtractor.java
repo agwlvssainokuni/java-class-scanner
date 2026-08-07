@@ -22,6 +22,7 @@ import cherry.classscanner.model.FieldRecord;
 import cherry.classscanner.model.MethodRecord;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassInfo;
+import io.github.classgraph.FieldInfo;
 import io.github.classgraph.MethodInfo;
 import io.github.classgraph.MethodParameterInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -95,7 +96,7 @@ public class RecordExtractor {
     ) {
         return classes.stream()
                 .flatMap(classInfo -> classInfo.getFieldInfo().stream()
-                        .sorted(Comparator.comparing(io.github.classgraph.FieldInfo::getName))
+                        .sorted(Comparator.comparing(FieldInfo::getName))
                         .map(fieldInfo -> new FieldRecord(
                                 sourcePath,
                                 classInfo.getName(),

@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -170,7 +171,7 @@ class ClassScannerRunnerTest {
         }
     }
 
-    private java.util.List<String> linesOf(Path path) {
+    private List<String> linesOf(Path path) {
         try {
             return Files.readAllLines(path, StandardCharsets.UTF_8);
         } catch (IOException e) {
