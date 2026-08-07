@@ -16,16 +16,14 @@
 
 package cherry.classscanner.model;
 
-import jakarta.annotation.Nonnull;
-
 import java.util.List;
 
 public record ConstructorRecord(
-        @Nonnull String sourcePath,
-        @Nonnull String className,
-        @Nonnull List<String> parameters,
-        @Nonnull String modifiers,
-        @Nonnull List<String> constructorAnnotations,
-        @Nonnull List<List<String>> parameterAnnotations
+        String sourcePath,
+        String className,
+        List<String> parameters,
+        String modifiers,
+        List<String> constructorAnnotations,
+        List<List<String>> parameterAnnotations
 ) {
 }

@@ -264,6 +264,14 @@
 
 ---
 
+## Code Generation - Request Changes: null-safety convention (JSpecify @NullMarked)
+**Timestamp**: 2026-08-07T02:00:01Z
+**User Input**: "都度@Nonnullをつけるのと、「非nullが基本であり、@Nullableが無かったら、非nullとして扱う」というのではどちらが良いだろうか？" then, after AI recommended default-non-null via JSpecify and explained the alternative of just dropping @Nonnull without new tooling: "推奨で。"
+**AI Response**: "Migrated the whole codebase from jakarta.annotation.Nonnull/Nullable to JSpecify. Added org.jspecify:jspecify (version managed by Spring Boot's BOM) to build.gradle as implementation. Added package-info.java with @NullMarked to every main source package (cherry.classscanner, .model, .extract, .output, .config). Removed all @Nonnull annotations (redundant under @NullMarked) and switched the handful of @Nullable usages (ClassRecord.superclass, RecordExtractor's two packageFilter parameters) to org.jspecify.annotations.Nullable, via a scripted sed pass across all affected main-source files followed by manual cleanup of resulting double-blank-lines and one import-ordering issue in RecordExtractor.java. Kept jakarta.annotation-api as a testImplementation-only dependency, since fixtures/SampleClass.java uses jakarta.annotation.Nonnull purely as a stand-in runtime-visible annotation for testing ClassGraph's annotation extraction (RecordExtractorTest asserts on the literal string 'jakarta.annotation.Nonnull') - explicitly decoupled from the project's own null-safety convention, left untouched. Documented the convention in CLAUDE.local.md (Key Technologies + Code Quality Patterns: JSpecify entry, explicit 'do not write @Nonnull' guidance, and a note on why jakarta.annotation-api still appears as a test dependency). Verified via ./gradlew build (38/38 tests still pass, no test assertions needed to change) and a JSON smoke test via the built jar."
+**Context**: CONSTRUCTION PHASE - Code Generation (post-completion Request Changes cycle, unit: java-class-scanner)
+
+---
+
 ## Code Generation - Request Changes: processFile should return, not mutate a passed-in collector
 **Timestamp**: 2026-08-07T01:50:52Z
 **User Input**: "Aggregationを引数に渡して、呼び出し先にaddさせるのは筋がよくないと思う。返却値として返して、呼び出し元で集約する形の方が良いのでは？"

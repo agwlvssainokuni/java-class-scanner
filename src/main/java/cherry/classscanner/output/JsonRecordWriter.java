@@ -16,7 +16,6 @@
 
 package cherry.classscanner.output;
 
-import jakarta.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
@@ -38,17 +37,17 @@ public class JsonRecordWriter<T> implements RecordWriter<T> {
 
     private final ObjectMapper objectMapper;
 
-    public JsonRecordWriter(@Nonnull @Qualifier("jsonMapper") ObjectMapper objectMapper) {
+    public JsonRecordWriter(@Qualifier("jsonMapper") ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     @Override
     public void write(
-            @Nonnull List<T> records,
-            @Nonnull Class<T> type,
-            @Nonnull String format,
-            @Nonnull Path outputPath,
-            @Nonnull Charset charset
+            List<T> records,
+            Class<T> type,
+            String format,
+            Path outputPath,
+            Charset charset
     ) throws IOException {
         try (var writer = new OutputStreamWriter(Files.newOutputStream(outputPath), charset)) {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, records);

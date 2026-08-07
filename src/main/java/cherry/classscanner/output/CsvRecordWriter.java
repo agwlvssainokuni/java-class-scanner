@@ -20,7 +20,6 @@ import cherry.classscanner.model.ClassRecord;
 import cherry.classscanner.model.ConstructorRecord;
 import cherry.classscanner.model.FieldRecord;
 import cherry.classscanner.model.MethodRecord;
-import jakarta.annotation.Nonnull;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
@@ -43,11 +42,11 @@ public class CsvRecordWriter<T> implements RecordWriter<T> {
 
     @Override
     public void write(
-            @Nonnull List<T> records,
-            @Nonnull Class<T> type,
-            @Nonnull String format,
-            @Nonnull Path outputPath,
-            @Nonnull Charset charset
+            List<T> records,
+            Class<T> type,
+            String format,
+            Path outputPath,
+            Charset charset
     ) throws IOException {
         var baseFormat = "tsv".equals(format) ? CSVFormat.TDF : CSVFormat.DEFAULT;
         var csvFormat = baseFormat.builder().setHeader(headersFor(type).toArray(new String[0])).get();
@@ -60,8 +59,7 @@ public class CsvRecordWriter<T> implements RecordWriter<T> {
         }
     }
 
-    @Nonnull
-    private List<String> headersFor(@Nonnull Class<T> type) {
+    private List<String> headersFor(Class<T> type) {
         if (type == ClassRecord.class) {
             return List.of("ソースパス", "クラス名", "型", "親クラス", "実装インターフェース", "パッケージ", "修飾子", "クラスアノテーション");
         } else if (type == MethodRecord.class) {
@@ -74,8 +72,7 @@ public class CsvRecordWriter<T> implements RecordWriter<T> {
         throw new IllegalArgumentException("Unsupported record type: " + type);
     }
 
-    @Nonnull
-    private List<Object> rowValues(@Nonnull T record) {
+    private List<Object> rowValues(T record) {
         return switch (record) {
             case ClassRecord r -> List.of(
                     r.sourcePath(), r.className(), r.type(), StringUtils.defaultString(r.superclass()),
@@ -97,13 +94,11 @@ public class CsvRecordWriter<T> implements RecordWriter<T> {
         };
     }
 
-    @Nonnull
-    private String join(@Nonnull List<String> values) {
+    private String join(List<String> values) {
         return String.join(", ", values);
     }
 
-    @Nonnull
-    private String joinNested(@Nonnull List<List<String>> values) {
+    private String joinNested(List<List<String>> values) {
         return values.stream()
                 .map(inner -> String.join(";", inner))
                 .collect(Collectors.joining(" | "));

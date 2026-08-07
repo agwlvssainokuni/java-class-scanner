@@ -48,6 +48,7 @@ This is a Spring Boot command-line application that scans Java class files and d
 - **ClassGraph 4.8.184**: Primary library for scanning and analyzing Java classes
 - **Apache Commons CSV 1.14.1**: For CSV/TSV output generation
 - **Jackson 3.x** (`tools.jackson`, not the legacy `com.fasterxml.jackson`): For JSON/YAML output generation. Version is managed via Spring Boot's BOM (no explicit version in `build.gradle`).
+- **JSpecify** (`org.jspecify`): Null-safety annotations (`@NullMarked` per package, `@Nullable` for exceptions). Version managed via Spring Boot's BOM. See "Code Quality Patterns" below.
 - **jqwik 1.10.1**: Property-Based Testing framework (test scope only)
 - **Gradle**: Build system with Spring Boot plugin
 
@@ -133,7 +134,7 @@ Multi-value fields (interfaces, parameters, annotations) are delimiter-joined in
 ### Code Quality Patterns
 - **DRY principle**: Eliminated duplicate Stream processing through method extraction
 - **Single responsibility**: Extraction (`RecordExtractor`), formatting (`RecordWriter` implementations), and orchestration (`ClassScannerRunner`) are separate components, each independently testable
-- **Null safety**: Consistent use of `@Nonnull` and `@Nullable` annotations
+- **Null safety**: JSpecify (`org.jspecify:jspecify`, version managed by the Spring Boot BOM). Every `cherry.classscanner*` package has a `package-info.java` annotated `@NullMarked`, so non-null is the default and only genuinely nullable elements carry `@Nullable` (currently just `ClassRecord.superclass` and the two `packageFilter` parameters in `RecordExtractor`). Do not write `@Nonnull` — it would be redundant noise under `@NullMarked` and there's deliberately none left in the codebase. When adding a new package under `cherry.classscanner`, add a matching `package-info.java` with `@NullMarked`. Note: `jakarta.annotation-api` is still a `testImplementation`-only dependency, but only because the `fixtures/SampleClass` test fixture uses `jakarta.annotation.Nonnull` as a stand-in runtime-visible annotation to verify ClassGraph's annotation extraction — it has nothing to do with this project's own null-safety convention.
 - **Error handling**: Graceful fallbacks with user warnings for invalid inputs (charset, format — now covering `csv`/`tsv`/`json`/`yaml`)
 - **Immutable collections**: Uses `toList()` for immutable result collections
 - **Testing**: JUnit 5 + AssertJ for example-based tests; jqwik for property-based tests (`*PropertyTest.java`, separated by naming from example-based tests per project convention). Tests scan real fixture classes (`src/test/java/cherry/classscanner/fixtures/`) via ClassGraph rather than mocking ClassGraph's `ClassInfo`/`MethodInfo` types, which are impractical to construct synthetically

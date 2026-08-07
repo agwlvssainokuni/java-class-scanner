@@ -29,7 +29,6 @@ import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
-import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -65,10 +64,10 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     private final YamlRecordWriter<?> yamlRecordWriter;
 
     public ClassScannerRunner(
-            @Nonnull RecordExtractor recordExtractor,
-            @Nonnull CsvRecordWriter<?> csvRecordWriter,
-            @Nonnull JsonRecordWriter<?> jsonRecordWriter,
-            @Nonnull YamlRecordWriter<?> yamlRecordWriter
+            RecordExtractor recordExtractor,
+            CsvRecordWriter<?> csvRecordWriter,
+            JsonRecordWriter<?> jsonRecordWriter,
+            YamlRecordWriter<?> yamlRecordWriter
     ) {
         this.recordExtractor = recordExtractor;
         this.csvRecordWriter = csvRecordWriter;
@@ -77,7 +76,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     }
 
     @Override
-    public void run(@Nonnull ApplicationArguments args) {
+    public void run(ApplicationArguments args) {
         if (args.getNonOptionArgs().isEmpty()) {
             if (!args.containsOption("quiet")) {
                 logger.info("Usage: java -jar java-class-scanner.jar [options] <file|directory>...");
@@ -113,7 +112,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     }
 
     private void processJarFiles(
-            @Nonnull ApplicationArguments args
+            ApplicationArguments args
     ) throws IOException {
         var files = findProcessableFiles(args.getNonOptionArgs());
 
@@ -138,9 +137,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         }
     }
 
-    @Nonnull
     private List<String> findProcessableFiles(
-            @Nonnull List<String> nonOptionArgs
+            List<String> nonOptionArgs
     ) {
         return nonOptionArgs.stream()
                 .filter(arg -> {
@@ -150,10 +148,9 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
                 .toList();
     }
 
-    @Nonnull
     private Aggregation processFile(
-            @Nonnull String filePath,
-            @Nonnull ApplicationArguments args
+            String filePath,
+            ApplicationArguments args
     ) {
         var quiet = args.containsOption("quiet");
         var isDirectory = Files.isDirectory(Paths.get(filePath));
@@ -213,10 +210,10 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     }
 
     private void writeAggregated(
-            @Nonnull ApplicationArguments args,
-            @Nonnull String format,
-            @Nonnull Charset charset,
-            @Nonnull Aggregation aggregation
+            ApplicationArguments args,
+            String format,
+            Charset charset,
+            Aggregation aggregation
     ) throws IOException {
         var quiet = args.containsOption("quiet");
         RecordWriter<?> writer = switch (format) {
@@ -244,13 +241,13 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     }
 
     private <X> void writeOne(
-            @Nonnull RecordWriter<?> writer,
-            @Nonnull List<X> records,
-            @Nonnull Class<X> type,
-            @Nonnull String outputKey,
-            @Nonnull String fileName,
-            @Nonnull String format,
-            @Nonnull Charset charset,
+            RecordWriter<?> writer,
+            List<X> records,
+            Class<X> type,
+            String outputKey,
+            String fileName,
+            String format,
+            Charset charset,
             boolean quiet
     ) throws IOException {
         writeRecords(writer, records, type, format, Path.of(fileName), charset);
@@ -262,18 +259,17 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
 
     @SuppressWarnings("unchecked")
     private <X> void writeRecords(
-            @Nonnull RecordWriter<?> writer,
-            @Nonnull List<X> records,
-            @Nonnull Class<X> type,
-            @Nonnull String format,
-            @Nonnull Path outputPath,
-            @Nonnull Charset charset
+            RecordWriter<?> writer,
+            List<X> records,
+            Class<X> type,
+            String format,
+            Path outputPath,
+            Charset charset
     ) throws IOException {
         ((RecordWriter<X>) writer).write(records, type, format, outputPath, charset);
     }
 
-    @Nonnull
-    private String resolveFormat(@Nonnull ApplicationArguments args) {
+    private String resolveFormat(ApplicationArguments args) {
         var format = args.containsOption("format") ?
                 args.getOptionValues("format").getFirst().toLowerCase() : "csv";
         return switch (format) {
@@ -287,15 +283,13 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
         };
     }
 
-    @Nonnull
-    private Charset resolveCharset(@Nonnull ApplicationArguments args) {
+    private Charset resolveCharset(ApplicationArguments args) {
         var charsetName = args.containsOption("charset") ?
                 args.getOptionValues("charset").getFirst() : "UTF-8";
         return getCharset(charsetName, args.containsOption("quiet"));
     }
 
-    @Nonnull
-    private Charset getCharset(@Nonnull String charsetName, boolean quiet) {
+    private Charset getCharset(String charsetName, boolean quiet) {
         try {
             return Charset.forName(charsetName);
         } catch (UnsupportedCharsetException | IllegalCharsetNameException e) {
@@ -307,8 +301,8 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
     }
 
     private void printVerboseClassInfo(
-            @Nonnull String sourcePath,
-            @Nonnull ClassInfo classInfo
+            String sourcePath,
+            ClassInfo classInfo
     ) {
         logger.info("  {}", classInfo.getName());
 
@@ -385,18 +379,16 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
      * {@link #merge}で積み上げる(副作用による集約ではなく、返却値の合成として表現する)。
      */
     private record Aggregation(
-            @Nonnull List<ClassRecord> classes,
-            @Nonnull List<MethodRecord> methods,
-            @Nonnull List<FieldRecord> fields,
-            @Nonnull List<ConstructorRecord> constructors
+            List<ClassRecord> classes,
+            List<MethodRecord> methods,
+            List<FieldRecord> fields,
+            List<ConstructorRecord> constructors
     ) {
-        @Nonnull
         static Aggregation empty() {
             return new Aggregation(List.of(), List.of(), List.of(), List.of());
         }
 
-        @Nonnull
-        Aggregation merge(@Nonnull Aggregation other) {
+        Aggregation merge(Aggregation other) {
             return new Aggregation(
                     concat(classes, other.classes),
                     concat(methods, other.methods),
@@ -405,8 +397,7 @@ public class ClassScannerRunner implements ApplicationRunner, ExitCodeGenerator 
             );
         }
 
-        @Nonnull
-        private static <X> List<X> concat(@Nonnull List<X> a, @Nonnull List<X> b) {
+        private static <X> List<X> concat(List<X> a, List<X> b) {
             if (a.isEmpty()) {
                 return b;
             }

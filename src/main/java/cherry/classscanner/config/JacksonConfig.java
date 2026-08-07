@@ -16,7 +16,6 @@
 
 package cherry.classscanner.config;
 
-import jakarta.annotation.Nonnull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tools.jackson.databind.ObjectMapper;
@@ -35,13 +34,11 @@ import tools.jackson.dataformat.yaml.YAMLMapper;
 public class JacksonConfig {
 
     @Bean("jsonMapper")
-    @Nonnull
     public ObjectMapper jsonMapper() {
         return JsonMapper.builder().build();
     }
 
     @Bean("yamlMapper")
-    @Nonnull
     public YAMLMapper yamlMapper() {
         return YAMLMapper.builder().build();
     }

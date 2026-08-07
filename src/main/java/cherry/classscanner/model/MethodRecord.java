@@ -16,8 +16,6 @@
 
 package cherry.classscanner.model;
 
-import jakarta.annotation.Nonnull;
-
 import java.util.List;
 
 /**
@@ -25,14 +23,14 @@ import java.util.List;
  * 各要素はその引数に付与されたアノテーション名のリスト(0件の場合は空リスト)。
  */
 public record MethodRecord(
-        @Nonnull String sourcePath,
-        @Nonnull String className,
-        @Nonnull String methodName,
-        @Nonnull String returnType,
-        @Nonnull List<String> parameters,
-        @Nonnull String modifiers,
+        String sourcePath,
+        String className,
+        String methodName,
+        String returnType,
+        List<String> parameters,
+        String modifiers,
         boolean isStatic,
-        @Nonnull List<String> methodAnnotations,
-        @Nonnull List<List<String>> parameterAnnotations
+        List<String> methodAnnotations,
+        List<List<String>> parameterAnnotations
 ) {
 }

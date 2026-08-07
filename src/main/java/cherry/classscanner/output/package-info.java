@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 agwlvssainokuni
+ * Copyright 2026 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package cherry.classscanner;
+/**
+ * このパッケージ配下は{@code @NullMarked}であり、型・パラメータ・戻り値は
+ * 明示的に{@link org.jspecify.annotations.Nullable}が付与されない限り非nullとして扱う。
+ */
+@NullMarked
+package cherry.classscanner.output;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class Main {
-
-    public static void main(String[] args) {
-        System.exit(doMain(args));
-    }
-
-    private static int doMain(String[] args) {
-        try (var context = SpringApplication.run(Main.class, args)) {
-            return SpringApplication.exit(context);
-        }
-    }
-}
+import org.jspecify.annotations.NullMarked;

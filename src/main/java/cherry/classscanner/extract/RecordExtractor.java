@@ -24,9 +24,8 @@ import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.MethodInfo;
 import io.github.classgraph.MethodParameterInfo;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -40,9 +39,8 @@ import java.util.stream.Stream;
 @Component
 public class RecordExtractor {
 
-    @Nonnull
     public List<ClassInfo> filterAndSortByPackage(
-            @Nonnull List<ClassInfo> allClasses,
+            List<ClassInfo> allClasses,
             @Nullable List<String> packageFilter
     ) {
         return allClasses.stream()
@@ -51,10 +49,9 @@ public class RecordExtractor {
                 .toList();
     }
 
-    @Nonnull
     public List<ClassRecord> extractClasses(
-            @Nonnull String sourcePath,
-            @Nonnull List<ClassInfo> classes
+            String sourcePath,
+            List<ClassInfo> classes
     ) {
         return classes.stream()
                 .map(classInfo -> new ClassRecord(
@@ -70,10 +67,9 @@ public class RecordExtractor {
                 .toList();
     }
 
-    @Nonnull
     public List<MethodRecord> extractMethods(
-            @Nonnull String sourcePath,
-            @Nonnull List<ClassInfo> classes
+            String sourcePath,
+            List<ClassInfo> classes
     ) {
         return classes.stream()
                 .flatMap(classInfo -> classInfo.getMethodInfo().stream()
@@ -93,10 +89,9 @@ public class RecordExtractor {
                 .toList();
     }
 
-    @Nonnull
     public List<FieldRecord> extractFields(
-            @Nonnull String sourcePath,
-            @Nonnull List<ClassInfo> classes
+            String sourcePath,
+            List<ClassInfo> classes
     ) {
         return classes.stream()
                 .flatMap(classInfo -> classInfo.getFieldInfo().stream()
@@ -113,10 +108,9 @@ public class RecordExtractor {
                 .toList();
     }
 
-    @Nonnull
     public List<ConstructorRecord> extractConstructors(
-            @Nonnull String sourcePath,
-            @Nonnull List<ClassInfo> classes
+            String sourcePath,
+            List<ClassInfo> classes
     ) {
         return classes.stream()
                 .flatMap(classInfo -> classInfo.getConstructorInfo().stream()
@@ -132,8 +126,7 @@ public class RecordExtractor {
                 .toList();
     }
 
-    @Nonnull
-    private String classType(@Nonnull ClassInfo classInfo) {
+    private String classType(ClassInfo classInfo) {
         if (classInfo.isInterface()) {
             return "Interface";
         } else if (classInfo.isAbstract()) {
@@ -148,7 +141,7 @@ public class RecordExtractor {
     }
 
     private boolean matchesPackageFilter(
-            @Nonnull String className,
+            String className,
             @Nullable List<String> packageFilter
     ) {
         if (packageFilter == null) {
@@ -163,29 +156,26 @@ public class RecordExtractor {
         return false;
     }
 
-    private boolean isRegularMethod(@Nonnull MethodInfo methodInfo) {
+    private boolean isRegularMethod(MethodInfo methodInfo) {
         return !methodInfo.getName().equals("<init>") &&
                 !methodInfo.getName().equals("<clinit>") &&
                 !methodInfo.getName().contains("lambda$");
     }
 
-    @Nonnull
-    private List<String> parameterTypes(@Nonnull MethodParameterInfo[] parameters) {
+    private List<String> parameterTypes(MethodParameterInfo[] parameters) {
         return Stream.of(parameters)
                 .map(MethodParameterInfo::getTypeSignatureOrTypeDescriptor)
                 .map(Object::toString)
                 .toList();
     }
 
-    @Nonnull
-    private List<String> annotationNames(@Nonnull List<AnnotationInfo> annotations) {
+    private List<String> annotationNames(List<AnnotationInfo> annotations) {
         return annotations.stream()
                 .map(AnnotationInfo::getName)
                 .toList();
     }
 
-    @Nonnull
-    private List<List<String>> parameterAnnotationNames(@Nonnull MethodParameterInfo[] parameters) {
+    private List<List<String>> parameterAnnotationNames(MethodParameterInfo[] parameters) {
         return Stream.of(parameters)
                 .map(param -> annotationNames(param.getAnnotationInfo()))
                 .toList();

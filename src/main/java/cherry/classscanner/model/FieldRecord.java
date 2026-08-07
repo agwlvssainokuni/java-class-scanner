@@ -16,17 +16,15 @@
 
 package cherry.classscanner.model;
 
-import jakarta.annotation.Nonnull;
-
 import java.util.List;
 
 public record FieldRecord(
-        @Nonnull String sourcePath,
-        @Nonnull String className,
-        @Nonnull String fieldName,
-        @Nonnull String fieldType,
-        @Nonnull String modifiers,
+        String sourcePath,
+        String className,
+        String fieldName,
+        String fieldType,
+        String modifiers,
         boolean isStatic,
-        @Nonnull List<String> fieldAnnotations
+        List<String> fieldAnnotations
 ) {
 }

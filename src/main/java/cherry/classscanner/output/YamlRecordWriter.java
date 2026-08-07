@@ -16,7 +16,6 @@
 
 package cherry.classscanner.output;
 
-import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Component;
 import tools.jackson.dataformat.yaml.YAMLMapper;
 
@@ -37,17 +36,17 @@ public class YamlRecordWriter<T> implements RecordWriter<T> {
 
     private final YAMLMapper yamlMapper;
 
-    public YamlRecordWriter(@Nonnull YAMLMapper yamlMapper) {
+    public YamlRecordWriter(YAMLMapper yamlMapper) {
         this.yamlMapper = yamlMapper;
     }
 
     @Override
     public void write(
-            @Nonnull List<T> records,
-            @Nonnull Class<T> type,
-            @Nonnull String format,
-            @Nonnull Path outputPath,
-            @Nonnull Charset charset
+            List<T> records,
+            Class<T> type,
+            String format,
+            Path outputPath,
+            Charset charset
     ) throws IOException {
         try (var writer = new OutputStreamWriter(Files.newOutputStream(outputPath), charset)) {
             yamlMapper.writeValue(writer, records);

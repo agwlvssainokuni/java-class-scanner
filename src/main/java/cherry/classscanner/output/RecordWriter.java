@@ -16,8 +16,6 @@
 
 package cherry.classscanner.output;
 
-import jakarta.annotation.Nonnull;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -33,10 +31,10 @@ import java.util.List;
 public interface RecordWriter<T> {
 
     void write(
-            @Nonnull List<T> records,
-            @Nonnull Class<T> type,
-            @Nonnull String format,
-            @Nonnull Path outputPath,
-            @Nonnull Charset charset
+            List<T> records,
+            Class<T> type,
+            String format,
+            Path outputPath,
+            Charset charset
     ) throws IOException;
 }

@@ -16,8 +16,7 @@
 
 package cherry.classscanner.model;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,13 +25,13 @@ import java.util.List;
  * (JSON/YAML出力では明示的なnullとして表現し、キー自体は省略しない。domain-entities.md参照)。
  */
 public record ClassRecord(
-        @Nonnull String sourcePath,
-        @Nonnull String className,
-        @Nonnull String type,
+        String sourcePath,
+        String className,
+        String type,
         @Nullable String superclass,
-        @Nonnull List<String> interfaces,
-        @Nonnull String packageName,
-        @Nonnull String modifiers,
-        @Nonnull List<String> classAnnotations
+        List<String> interfaces,
+        String packageName,
+        String modifiers,
+        List<String> classAnnotations
 ) {
 }
