@@ -36,3 +36,6 @@ target/
 *~
 *.swp
 *.tsv
+
+# jqwik property-based testing local run database
+.jqwik-database
