@@ -75,7 +75,7 @@ The application supports multiple output modes:
 
 ### Configuration
 
-- **application.properties**: Disables Spring Boot banner, configures logging levels
+- **application.yml**: Disables Spring Boot banner, configures logging levels (switched from `application.properties`)
 - **Charset support**: UTF-8 default with customizable encoding for output files
 - **Package filtering**: Optional filtering by package name patterns
 

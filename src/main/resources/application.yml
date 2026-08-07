@@ -1,0 +1,12 @@
+spring:
+  main:
+    banner-mode: off
+
+logging:
+  pattern:
+    console: "%msg%n"
+  level:
+    root: WARN
+    org.springframework: WARN
+    cherry.classscanner: WARN
+    cherry.classscanner.ClassScannerRunner: INFO
