@@ -5,14 +5,14 @@ Units Generationは省略済み（単一モジュールのモノリスのため�
 
 ## Plan
 
-- [ ] ドメインモデル（DTOのフィールド確定・関係性）を整理する
-- [ ] 抽出ロジックのビジネスルール（フィルタリング・ソート順）を確定する
-- [ ] 書式化ロジックのビジネスルール（CSV/TSVとJSON/YAMLの差異、null値表現等）を確定する
-- [ ] エラーハンドリング（部分失敗時の挙動、不正値フォールバック）を確定する
-- [ ] 上記に基づき、以下の成果物を生成する:
-  - [ ] `aidlc-docs/construction/java-class-scanner/functional-design/business-logic-model.md`
-  - [ ] `aidlc-docs/construction/java-class-scanner/functional-design/business-rules.md`
-  - [ ] `aidlc-docs/construction/java-class-scanner/functional-design/domain-entities.md`
+- [x] ドメインモデル（DTOのフィールド確定・関係性）を整理する
+- [x] 抽出ロジックのビジネスルール（フィルタリング・ソート順）を確定する
+- [x] 書式化ロジックのビジネスルール（CSV/TSVとJSON/YAMLの差異、null値表現等）を確定する
+- [x] エラーハンドリング（部分失敗時の挙動、不正値フォールバック）を確定する
+- [x] 上記に基づき、以下の成果物を生成する:
+  - [x] `aidlc-docs/construction/java-class-scanner/functional-design/business-logic-model.md`
+  - [x] `aidlc-docs/construction/java-class-scanner/functional-design/business-rules.md`
+  - [x] `aidlc-docs/construction/java-class-scanner/functional-design/domain-entities.md`
 
 ## Clarifying Questions
 
@@ -27,7 +27,7 @@ B) 何も書き出さない（全件成功した場合のみJSON/YAMLファイ�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ### Question 2: 抽出結果が0件の場合の出力ファイル生成
 対象クラスが0件、またはパッケージフィルタで全て除外された場合、出力ファイルはどう扱いますか？
@@ -38,7 +38,7 @@ B) 該当するデータが1件もない場合はファイル自体を生成し�
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
 
 ### Question 3: null値フィールドのJSON/YAML表現
 `ClassRecord.superclass`のように値が存在しない場合がある項目（例: インターフェースやObjectクラス自身には親クラスがない）を、JSON/YAMLでどう表現しますか？
@@ -49,4 +49,4 @@ B) 値が存在しない場合はキー自体を省略する（Jacksonの`@JsonI
 
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: 
+[Answer]: A
