@@ -264,6 +264,14 @@
 
 ---
 
+## Code Generation - Request Changes: processFile should return, not mutate a passed-in collector
+**Timestamp**: 2026-08-07T01:50:52Z
+**User Input**: "Aggregationを引数に渡して、呼び出し先にaddさせるのは筋がよくないと思う。返却値として返して、呼び出し元で集約する形の方が良いのでは？"
+**AI Response**: "Agreed and applied. Changed processFile(filePath, args, aggregation): void (mutating the passed-in Aggregation's lists via addAll) to processFile(filePath, args): Aggregation (returns a fresh Aggregation built from that file's extraction, empty lists for output kinds not requested or when no classes were found). Made Aggregation an immutable value type (empty() now uses List.of() instead of new ArrayList<>()) and added a merge() method that concatenates two Aggregations' lists pairwise (returning the other list unchanged when one side is empty, to avoid needless copying). processJarFiles now does `aggregation = aggregation.merge(processFile(filePath, args))` per loop iteration instead of passing a shared mutable collector into processFile. Verified via ./gradlew build (38/38 tests, no test changes needed since only ClassScannerRunner's internals changed, not its observable behavior) and a repeat of the multi-input CSV smoke test (still 1 header + 4 correctly aggregated rows). Updated the CLAUDE.local.md 'Unified write timing' section to describe the return-and-merge pattern instead of the old mutate-a-shared-collector description."
+**Context**: CONSTRUCTION PHASE - Code Generation (post-completion Request Changes cycle, unit: java-class-scanner)
+
+---
+
 ## Code Generation - Request Changes: null-safety convention (JSpecify @NullMarked)
 **Timestamp**: 2026-08-07T02:00:01Z
 **User Input**: "都度@Nonnullをつけるのと、「非nullが基本であり、@Nullableが無かったら、非nullとして扱う」というのではどちらが良いだろうか？" then, after AI recommended default-non-null via JSpecify and explained the alternative of just dropping @Nonnull without new tooling: "推奨で。"
@@ -272,8 +280,56 @@
 
 ---
 
-## Code Generation - Request Changes: processFile should return, not mutate a passed-in collector
-**Timestamp**: 2026-08-07T01:50:52Z
-**User Input**: "Aggregationを引数に渡して、呼び出し先にaddさせるのは筋がよくないと思う。返却値として返して、呼び出し元で集約する形の方が良いのでは？"
-**AI Response**: "Agreed and applied. Changed processFile(filePath, args, aggregation): void (mutating the passed-in Aggregation's lists via addAll) to processFile(filePath, args): Aggregation (returns a fresh Aggregation built from that file's extraction, empty lists for output kinds not requested or when no classes were found). Made Aggregation an immutable value type (empty() now uses List.of() instead of new ArrayList<>()) and added a merge() method that concatenates two Aggregations' lists pairwise (returning the other list unchanged when one side is empty, to avoid needless copying). processJarFiles now does `aggregation = aggregation.merge(processFile(filePath, args))` per loop iteration instead of passing a shared mutable collector into processFile. Verified via ./gradlew build (38/38 tests, no test changes needed since only ClassScannerRunner's internals changed, not its observable behavior) and a repeat of the multi-input CSV smoke test (still 1 header + 4 correctly aggregated rows). Updated the CLAUDE.local.md 'Unified write timing' section to describe the return-and-merge pattern instead of the old mutate-a-shared-collector description."
+## Code Generation - Request Changes: remove remaining FQCN usages
+**Timestamp**: 2026-08-07T02:08:32Z
+**User Input**: "io.github.classgraph.FieldInfo もimportして。" then, after the AI fixed that one instance: "他にFQCNを使っているところがないか点検。"
+**AI Response**: "Added the missing `import io.github.classgraph.FieldInfo;` in RecordExtractor.java and replaced the inline `io.github.classgraph.FieldInfo::getName` with the imported short name. Then searched the whole codebase (main and test sources) for other inline fully-qualified class name usages outside import statements, using progressively broader regex patterns. Found two more: `java.util.List` used inline in RecordExtractorPropertyTest.java (a method parameter type and an Arbitrary<...> return type) and in ClassScannerRunnerTest.java (a private helper's return type) - added `import java.util.List;` to both and shortened the references. Verified via ./gradlew build (38/38 tests pass)."
 **Context**: CONSTRUCTION PHASE - Code Generation (post-completion Request Changes cycle, unit: java-class-scanner)
+
+---
+
+## Code Generation - Request Changes: Javadoc gap check
+**Timestamp**: 2026-08-07T02:13:33Z
+**User Input**: "Javadocの書き漏れがないか点検。"
+**AI Response**: "Scripted a check across all main-source class/interface/record declarations for a preceding Javadoc block, and manually reviewed test classes and method-level documentation for consistency with the project's WHY-only comment philosophy (not WHAT). Found and fixed 3 real gaps: Main.java had no class Javadoc unlike every other main class (added a note explaining the try-with-resources + SpringApplication.exit exit-code-propagation pattern); ConstructorRecord.java was missing the same parameterAnnotations structure/ordering explanation that MethodRecord.java already has for the identical List<List<String>> shape (added it); ClassScannerRunner.writeRecords()'s @SuppressWarnings(\"unchecked\") cast had no inline justification for why it's safe (added one referencing the call-site convention). Checked FieldRecord.java (no class Javadoc either) and judged it as NOT a gap - it has no nullable field or nested-list structure requiring explanation, consistent with the WHY-only philosophy, so left as-is and reported this as a deliberate non-change. Verified via ./gradlew build (38/38 tests pass)."
+**Context**: CONSTRUCTION PHASE - Code Generation (post-completion Request Changes cycle, unit: java-class-scanner)
+
+---
+
+## Code Generation - Request Changes: copyright year for modified pre-existing files
+**Timestamp**: 2026-08-07T02:15:20Z
+**User Input**: "2025念のライセンス表記を「2025,2026」へ修正。"
+**AI Response**: "Found the two main-source files still carrying the original 'Copyright 2025' header (Main.java, ClassScannerRunner.java - both pre-existing files substantially modified during this session's Code Generation work, as opposed to newly-created files which already carry 'Copyright 2026'). Updated both headers to 'Copyright 2025,2026 agwlvssainokuni' to reflect original authorship year plus the year of this modification. Verified via ./gradlew build (38/38 tests pass, header-only change)."
+**Context**: CONSTRUCTION PHASE - Code Generation (post-completion Request Changes cycle, unit: java-class-scanner)
+
+---
+
+## Code Generation - Request Changes: switch to application.yml
+**Timestamp**: 2026-08-07T02:17:41Z
+**User Input**: "application.ymlへ切り替え。"
+**AI Response**: "Created src/main/resources/application.yml with the same settings as application.properties (spring.main.banner-mode=off, logging.pattern.console message-only format, and the four logging.level entries), then deleted application.properties (Spring Boot prefers .properties over .yml when both exist for the same base name, so the old file had to be removed rather than left alongside). Updated CLAUDE.local.md's Configuration section to reference application.yml. Verified via ./gradlew build plus a manual `java -jar` smoke test that banner suppression, message-only log format, and per-package log levels are all unchanged."
+**Context**: CONSTRUCTION PHASE - Code Generation (post-completion Request Changes cycle, unit: java-class-scanner)
+
+---
+
+## Code Generation - Request Changes: add demo.sh and a dedicated demo project
+**Timestamp**: 2026-08-07T02:26:23Z
+**User Input**: "デモを作れますか？" then, after AI asked what kind of demo (executable script vs Markdown walkthrough vs both) and the user asked to clarify: "基本は1. 新機能に限らず実際に動かして結果を確認できるデモが欲しい。" then, after the AI's first version scanned java-class-scanner's own compiled classes: "実行対象のクラスを配置するデモプロジェクトを別途用意して、そこに対して実行する形にして欲しい。"
+**AI Response**: "Created demo/src/com/example/library/{Author,Book,Borrowable,PaperBook,EBook}.java - a small, self-contained library domain model (inheritance, interface implementation, multiple constructors, a static field, a @Deprecated method) with nothing to do with java-class-scanner itself, so the demo output reads clearly rather than showing the tool's own Spring/DI internals. Wrote demo.sh at the repo root: compiles the demo sources with plain javac (no Gradle module needed) into demo/build/classes, also packages them into demo/build/library-demo.jar, then runs java-class-scanner against them through 11 sections covering console output, --verbose, classes/methods/fields/constructors-output, all four formats (csv/tsv/json/yaml), multi-input aggregation (scanning the directory AND the jar together, so sourcePath visibly differs between the two entries for the same class), invalid --format/--charset fallback, zero-result output, and no-args usage. Confirmed demo/build/ is already covered by the existing top-level `build/` gitignore rule. Ran the full script end-to-end and inspected all 11 sections' output before considering it done. Added a short 'Demo' section to README.md/README_en.md and a 'Run the demo' entry to CLAUDE.local.md's command list."
+**Context**: CONSTRUCTION PHASE - Code Generation (post-completion Request Changes cycle, unit: java-class-scanner)
+
+---
+
+## Code Generation - Final Approval / Transition to Build and Test
+**Timestamp**: 2026-08-07T02:31:39Z
+**User Input**: "Build and Testへ進んでください。"
+**AI Response**: "Code Generation for the single unit (java-class-scanner) is now considered complete and approved, after the full sequence of post-completion Request Changes rounds logged above (CSV/TSV write-timing unification, processFile return-value refactor, JSpecify null-safety migration, FQCN cleanup, Javadoc gaps, copyright year fix, application.yml switch, demo.sh addition). Proceeding to Build and Test per .aidlc-rule-details/construction/build-and-test.md."
+**Context**: CONSTRUCTION PHASE - Code Generation -> Build and Test transition
+
+---
+
+## Audit Log Correction - Chronological Order
+**Timestamp**: 2026-08-07T02:34:03Z
+**User Input**: "audit.mdの順序を点検。"
+**AI Response**: "Found that the previous 'Code Generation - Final Approval / Transition to Build and Test' entry had been inserted mid-file (its Edit matched an old_string that wasn't at the true file end), landing it before the 'processFile should return...' entry despite being chronologically later - and 5 intervening Request Changes rounds (FQCN cleanup, Javadoc gaps, copyright year, application.yml switch, demo.sh addition) had never been logged at all, only summarized in a parenthetical aside on the misplaced entry. Cross-checked real commit timestamps via `git log --pretty=format:%aI` for caeebcc/f3c60c9/aeaabdd/a5d3343/a175479 to reconstruct accurate ordering, moved the Final Approval entry to the true end of the file, moved processFile-return entry back before the JSpecify entry, and inserted the 5 missing entries in between at their correct chronological positions. Verified the full file now reads in strict timestamp order from Workspace Detection (2026-08-05T15:08:58Z) through this correction."
+**Context**: CONSTRUCTION PHASE - Code Generation (audit trail integrity correction, not a code/design change)
