@@ -50,8 +50,8 @@ This is a Spring Boot command-line application that scans Java class files and d
 
 ### Key Technologies
 
-- **Spring Boot 4.1.0** with Java 25
-- **ClassGraph 4.8.184**: Primary library for scanning and analyzing Java classes
+- **Spring Boot 4.1.1** with Java 25
+- **ClassGraph 4.8.194**: Primary library for scanning and analyzing Java classes
 - **Apache Commons CSV 1.14.1**: For CSV/TSV output generation
 - **Jackson 3.x** (`tools.jackson`, not the legacy `com.fasterxml.jackson`): For JSON/YAML output generation. Version is managed via Spring Boot's BOM (no explicit version in `build.gradle`).
 - **JSpecify** (`org.jspecify`): Null-safety annotations (`@NullMarked` per package, `@Nullable` for exceptions). Version managed via Spring Boot's BOM. See "Code Quality Patterns" below.

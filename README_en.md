@@ -195,10 +195,10 @@ as an empty string in CSV/TSV, and as an explicit `null` in JSON/YAML.
 
 ## Technical Specifications
 
-- **Framework**: Spring Boot 4.1.0
+- **Framework**: Spring Boot 4.1.1
 - **Java Version**: Java 25
 - **Key Libraries**:
-  - ClassGraph 4.8.184 (class analysis)
+  - ClassGraph 4.8.194 (class analysis)
   - Apache Commons CSV 1.14.1 (CSV/TSV output)
   - Jackson 3.x (`tools.jackson`, JSON/YAML output)
   - Apache Commons Lang3 (utilities)

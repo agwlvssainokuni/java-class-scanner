@@ -193,10 +193,10 @@ CSV/TSV出力の列構成（日本語ヘッダー）と、JSON/YAML出力のキ�
 
 ## 技術仕様
 
-- **フレームワーク**: Spring Boot 4.1.0
+- **フレームワーク**: Spring Boot 4.1.1
 - **Java バージョン**: Java 25
 - **主要ライブラリ**:
-  - ClassGraph 4.8.184 (クラス解析)
+  - ClassGraph 4.8.194 (クラス解析)
   - Apache Commons CSV 1.14.1 (CSV/TSV出力)
   - Jackson 3系 (`tools.jackson`, JSON/YAML出力)
   - Apache Commons Lang3 (ユーティリティ)
