@@ -8,7 +8,7 @@
 ## Workspace State
 - **Existing Code**: Yes
 - **Programming Languages**: Java
-- **Build System**: Gradle (build.gradle, settings.gradle, Gradle Wrapper 9.6.1)
+- **Build System**: Gradle (build.gradle.kts, settings.gradle.kts - Kotlin DSL, Gradle Wrapper 9.7.1)
 - **Project Structure**: Single-module CLI application (Spring Boot 4.1.0, Java 25)
 - **Workspace Root**: ~/Documents/project/git/java-class-scanner
 - **Reverse Engineering Needed**: Yes (no existing artifacts found)
@@ -61,4 +61,4 @@
 - **Lifecycle Phase**: CONSTRUCTION
 - **Current Stage**: Build and Test (complete)
 - **Next Stage**: Operations (PLACEHOLDER - not applicable to this local CLI tool; CONSTRUCTION PHASE is effectively the end of this AI-DLC workflow run)
-- **Status**: Awaiting user approval of aidlc-docs/construction/build-and-test/build-and-test-summary.md
+- **Status**: Main workflow run complete. Post-completion lightweight maintenance items are handled ad hoc (see audit.md): Gradle Wrapper/dependency updates (2026-08-31), build script conversion to Kotlin DSL (2026-08-31).

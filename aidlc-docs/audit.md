@@ -392,3 +392,13 @@
 **Context**: CONSTRUCTION PHASE (minimal) - transition to Code Generation
 
 ---
+
+## Code Generation / Build and Test - Build Script Conversion to Kotlin DSL Complete
+**Timestamp**: 2026-08-31T21:58:00Z
+**User Input**: N/A (execution of previously approved plan)
+**AI Response**: "Created build.gradle.kts (plugins block using `id(...)`/backtick `java-library` alias, `tasks.withType<JavaCompile>()`/`tasks.withType<Test>()` typed variants, dependencyManagement/dependencies blocks with double-quoted string notation) and settings.gradle.kts (rootProject.name), then removed build.gradle and settings.gradle via `git rm`. Updated CLAUDE.local.md's two build.gradle mentions (Jackson BOM note, Gradle bullet) to reference build.gradle.kts/Kotlin DSL. No other file in the repo referenced build.gradle/settings.gradle by filename outside of CLAUDE.local.md and the historical aidlc-docs artifacts (left unchanged as historical record, per the same precedent as the prior Gradle Wrapper maintenance item). Verified via `./gradlew clean build` (BUILD SUCCESSFUL, 38/38 unit tests pass) and `./demo.sh` (all 11 sections, exit code 0)."
+**Build Status**: Success
+**Test Status**: Pass (38/38 unit tests, demo.sh integration smoke test)
+**Context**: New lightweight work item (Code Generation + Build and Test, minimal depth) - complete, awaiting user approval/commit
+
+---
