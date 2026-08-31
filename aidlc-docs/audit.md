@@ -376,3 +376,11 @@
 **Context**: New lightweight work item (Code Generation + Build and Test, minimal depth) - complete, awaiting user approval/commit
 
 ---
+
+## New Maintenance Request - Build Script Conversion to Kotlin DSL
+**Timestamp**: 2026-08-31T21:52:00Z
+**User Input**: "ビルドスクリプトをkotlin DSLへ"
+**AI Response**: "New, independent maintenance request. Assessed as a low-risk, unambiguous developer-tooling/build-process change with no user-facing effect (matches the explicit skip criteria 'Developer tooling or build process improvements'), so User Stories/Application Design/Functional Design/NFR/Units Generation are all SKIP, following the same precedent as the prior Gradle Wrapper/dependency maintenance item. Proceeding with combined minimal-depth Requirements Analysis + Workflow Planning."
+**Context**: New lightweight work item (Requirements Analysis / Workflow Planning, minimal depth)
+
+---
